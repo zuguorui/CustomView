@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ZoomLayout">
+        <attr name="zoomLevel"/>
+        <attr name="verticalInterval"/>
+        <attr name="horizontalInterval"/>
+        <attr name="heightToWidthRatio"/>
+        <attr name="viewUnVisiableEdge"/>
+        <attr name="minZoomLevel"/>
+        <attr name="maxZoomLevel"/>
+    </declare-styleable>
+</resources>

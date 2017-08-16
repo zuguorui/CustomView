@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AlbumListView">
+        <attr name="zoomLevel"/>
+        <attr name="verticalInterval"/>
+        <attr name="minZoomLevel"/>
+        <attr name="maxZoomLevel"/>
+        <attr name="horizontalInterval"/>
+        <attr name="heightToWidthRatio"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zu.customview.ImageLoadActivity"
+    android:orientation="vertical">
+    <!--<com.zu.customview.view.AlbumListView.AlbumListViewTwo-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/ImageLoadActivity_albumListView"-->
+        <!--&gt;-->
+
+    <!--</com.zu.customview.view.AlbumListView.AlbumListViewTwo>-->
+    <!--&lt;!&ndash;<GridView&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:numColumns="4"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:horizontalSpacing="3dp"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:verticalSpacing="3dp"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:stretchMode="columnWidth"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/ImageLoadActivity_gridView">&ndash;&gt;-->
+
+
+    <!--&lt;!&ndash;</GridView>&ndash;&gt;-->
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/ImageLoadActivity_recyclerView">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

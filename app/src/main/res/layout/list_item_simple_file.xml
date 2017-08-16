@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="5dp"
+    android:foreground="@drawable/list_item_back"
+    android:descendantFocusability="blocksDescendants"
+    android:clickable="false"
+    android:longClickable="false"
+    >
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        android:id="@+id/list_item_simple_file_icon"
+        android:src="@drawable/chuyin"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="file_name"
+        android:maxLines="1"
+        android:textColor="#ff000000"
+        android:textSize="18sp"
+        android:id="@+id/list_item_simple_file_name"
+        android:layout_weight="1"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:layout_marginRight="0dp"
+        android:id="@+id/list_item_simple_file_button"/>
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="zoomLevel" format="integer"/>
+    <attr name="verticalInterval" format="dimension"/>
+    <attr name="horizontalInterval" format="dimension"/>
+    <attr name="heightToWidthRatio" format="float"/>
+    <attr name="viewUnVisiableEdge" format="dimension"/>
+    <attr name="minZoomLevel" format="integer"/>
+    <attr name="maxZoomLevel" format="integer"/>
+</resources>

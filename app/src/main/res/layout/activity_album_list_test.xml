@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.zu.customview.AlbumListTest">
+    <com.zu.customview.view.AlbumListView.AlbumListViewTwo
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        app:zoomLevel="2"
+        app:minZoomLevel="2"
+        app:maxZoomLevel="6"
+        android:id="@+id/AlbumListView_albumList"
+        android:padding="5dp">
+
+    </com.zu.customview.view.AlbumListView.AlbumListViewTwo>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="增加ZoomLevel"
+            android:id="@+id/AlbumListView_button_increaseZoomLevel"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="减少ZoomLevel"
+            android:id="@+id/AlbumListView_button_decreaseZoomLevel"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="changed"
+            android:id="@+id/AlbumListView_button_dataSetChanged"/>
+    </LinearLayout>
+</LinearLayout>

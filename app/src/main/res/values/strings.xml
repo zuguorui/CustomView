@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CustomView</string>
+    <string name="storage_warning">
+        Warning: storage is not available. You may want to unmount it.
+    </string>
+    <string name="nsd_servername_postfix">FTP Server</string>
+</resources>

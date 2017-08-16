@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.zu.customview.FrameLayoutTest"
+    android:id="@+id/Frame_root">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Frame_button_press"
+            android:text="press"
+            android:alpha="1"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Frame_button_check"
+            android:text="check"
+            android:alpha="1"/>
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="#ff9865"
+            android:id="@+id/Frame_imageView"/>
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:textColor="#000000"
+        android:textSize="30sp"
+
+        android:paddingTop="10dp"/>
+
+</FrameLayout>

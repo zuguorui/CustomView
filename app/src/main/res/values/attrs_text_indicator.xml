@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TextViewPagerIndicator">
+        <attr name="textColor" format="color"/>
+        <attr name="selectedTextColor" format="color"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="indicatorColor" format="color"/>
+        <attr name="indicatorHeight" format="dimension"/>
+        <attr name="intervalBetweenTags" format="dimension"/>
+        <attr name="textPadding" format="dimension"/>
+        <attr name="textPaddingTop" format="dimension"/>
+        <attr name="textPaddingBottom" format="dimension"/>
+        <attr name="textPaddingLeft" format="dimension"/>
+        <attr name="textPaddingRight" format="dimension"/>
+        <attr name="indicatorStyle" format="enum">
+            <enum name="line" value="0"/>
+            <enum name="background" value="1"/>
+        </attr>
+        <attr name="indicatorDrawable" format="reference"/>
+        <attr name="balanceLayout" format="boolean"/>
+    </declare-styleable>
+</resources>
