@@ -37,6 +37,7 @@ public class TextViewPagerIndicator extends ViewGroup
     private int textSize = 10;
     private int indicatorColor = Color.parseColor("#ffffff");
     private int indicatorHeight = 3;
+    /*tag之间的间隔*/
     private int interval = 10;
     private int textPadding = 0;
     private int textPaddingTop = 0;
@@ -61,13 +62,13 @@ public class TextViewPagerIndicator extends ViewGroup
     private ArrayList<String> tags = new ArrayList<>();
     private HashMap<String, TextView> tagMap = new HashMap<>();
     private ImageView indicatorLine;
-
+    /*目前选中的位置*/
     private int currentPosition = 0;
 
     private boolean expanded = false;
-
+    /*最前面的TextView的偏离值，为0时代表刚好对齐Layout的左侧*/
     private int textOffset = 0;
-
+    /*tag的点击监听器*/
     private ArrayList<OnTagClickedListener> onTagClickedListeners = new ArrayList<>();
 
 
@@ -76,7 +77,7 @@ public class TextViewPagerIndicator extends ViewGroup
      * */
 
     private float newX, newY, lastX, lastY, dx, dy, downX, downY;
-
+    /*判断是否是滑动*/
     private int touchSlop = 5;
 
     public TextViewPagerIndicator(Context context) {
@@ -124,24 +125,39 @@ public class TextViewPagerIndicator extends ViewGroup
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         log.v("onMeasure");
+        /*如果这个View不进行任何绘制操作，则设置为true，以便系统进行优化*/
         setWillNotDraw(true);
+
+        /*获取父view传递给我们的宽和高的SpecMode和SpecSize*/
         int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-
+        /*设置用来测量TextView宽度的MeasureSpec，由于tag是一定要完整的单行显示，因此我们将宽度的SpecMode设置为UNSPECIFIED，即
+        * 要多大给多大*/
         int unspecifiedWidthMeasureSpec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.UNSPECIFIED);
-        int unspecifiedHeightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.UNSPECIFIED);
-
+        /*设置用来测量TextView高度的MeasureSpec，不同于宽度，高度上TextView不能比我们指示器的高度更大，还要减去padding值和预留给横线的空间*/
         int atMostHeightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.AT_MOST);
 
 
+        /*宽度结果，要考虑paddingLeft和paddingRight*/
         int resultWidthSize = getPaddingLeft() + getPaddingRight();
+        /*高度结果，要考虑paddingTop和paddingBottom，还有给横线预留的位置*/
         int resultHeightSize = getPaddingTop() + getPaddingBottom() + indicatorHeight;
 
+//        int childWidthSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+//        int childHeightSpec = 0;
+//        if(heightSpecMode == MeasureSpec.UNSPECIFIED)
+//        {
+//            childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+//        }else
+//        {
+//            childHeightSpec = MeasureSpec.makeMeasureSpec(heightSize - resultHeightSize, MeasureSpec.EXACTLY);
+//        }
         for(String tag : tags)
         {
+            /*依次对每一个TextView进行布局，并将宽度累加到宽度结果里*/
             TextView child = tagMap.get(tag);
             ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
             int childWidthSpec = getChildMeasureSpec(unspecifiedWidthMeasureSpec, resultWidthSize, childLayoutParams.width);
@@ -149,12 +165,10 @@ public class TextViewPagerIndicator extends ViewGroup
             child.measure(childWidthSpec, childHeightSpec);
             resultWidthSize += child.getMeasuredWidth();
 
-//            if(resultHeightSize < (child.getMeasuredHeight() + getPaddingTop() + getPaddingBottom() + indicatorHeight))
-//            {
-//                resultHeightSize = child.getMeasuredHeight() + getPaddingTop() + getPaddingBottom() + indicatorHeight;
-//            }
         }
 
+        /*最终完全确定宽度和高度结果。注意到如果我们不是平衡布局，那么宽度结果还要加上tag之间的距离。对于高度结果，我们只要随便
+        * 取一个已经测量过的TextView将其高度加进去即可*/
         if(tags != null && tags.size() != 0)
         {
             resultHeightSize += tagMap.get(tags.get(0)).getMeasuredHeight();
@@ -164,7 +178,8 @@ public class TextViewPagerIndicator extends ViewGroup
             }
         }
 
-
+        /*结合父view传给我们的SpecMode来确定我们这个指示器layout的最终大小。如果是AT_MOST，那大小不能超过父View传给我们的SpecSize，
+        * 如果是EXACTLY，那就直接将SpecSize作为我们的结果，而不管我们之前测量的宽度和高度结果*/
         if(widthSpecMode == MeasureSpec.AT_MOST && heightSpecMode == MeasureSpec.AT_MOST)
         {
             setMeasuredDimension(resultWidthSize > widthSize ? widthSize : resultWidthSize,
@@ -188,18 +203,6 @@ public class TextViewPagerIndicator extends ViewGroup
 
         if(changed)
         {
-
-            if(balanceLayout)
-            {
-
-            }else
-            {
-
-            }
-
-//            layoutChildren(textOffset,
-//                    tags.size() == 0 ? getPaddingLeft() : tagMap.get(tags.get(currentPosition)).getLeft(),
-//                    tags.size() == 0 ? 0 : tagMap.get(tags.get(currentPosition)).getMeasuredWidth());
             layoutChildren(textOffset, currentPosition);
             tagMap.get(tags.get(currentPosition)).setTextColor(selectedTextColor);
         }
@@ -209,9 +212,11 @@ public class TextViewPagerIndicator extends ViewGroup
 
     private void layoutChildren(int textOffset, int indicatorOffset, int indicatorLength)
     {
+
         log.v("layout children, textOffset = " + textOffset + ", indicatorOffset = " + indicatorOffset + ", indicatorLength = " + indicatorLength);
         if(tags.size() != 0)
         {
+            /*计算TextView的顶部到指示器顶部的距离和底部到横线顶部的距离。由于我们的TextView是居中显示的（不），所以如下计算*/
             int padding = (getMeasuredHeight() - getPaddingBottom() - getPaddingTop() - indicatorHeight - tagMap.get(tags.get(0)).getMeasuredHeight()) / 2;
             if(padding < 0)
             {
@@ -219,6 +224,7 @@ public class TextViewPagerIndicator extends ViewGroup
             }
             if(balanceLayout)
             {
+                /*如果是平衡布局，我们就要计算横向所剩余的空间，再将这些空间平分，作为tag之间的间距和tag与指示器前端和后端的距离*/
                 int availableWidth = getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
                 int totalItemWidth = 0;
                 for(int i = 0; i < tags.size(); i++)
@@ -228,7 +234,7 @@ public class TextViewPagerIndicator extends ViewGroup
                 int space = (availableWidth - totalItemWidth) / (tags.size() + 1);
                 space = space < 0 ? 0 : space;
                 textOffset = getPaddingLeft() + space;
-
+                /*布局子view*/
                 for(int i = 0; i < tags.size(); i++)
                 {
                     TextView child = tagMap.get(tags.get(i));
@@ -254,7 +260,7 @@ public class TextViewPagerIndicator extends ViewGroup
         }
 
 
-
+        /*布局指示器的横线*/
         ViewGroup.LayoutParams layoutParams = indicatorLine.getLayoutParams();
         layoutParams.width = indicatorLength;
         indicatorLine.setLayoutParams(layoutParams);
@@ -267,6 +273,7 @@ public class TextViewPagerIndicator extends ViewGroup
     {
         if(tags.size() != 0)
         {
+            /*计算TextView的顶部到指示器顶部的距离和底部到横线顶部的距离。由于我们的TextView是居中显示的（不），所以如下计算*/
             int padding = (getMeasuredHeight() - getPaddingBottom() - getPaddingTop() - indicatorHeight - tagMap.get(tags.get(0)).getMeasuredHeight()) / 2;
             if(padding < 0)
             {
@@ -275,6 +282,7 @@ public class TextViewPagerIndicator extends ViewGroup
             if(balanceLayout)
             {
                 int availableWidth = getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
+                /*如果是平衡布局，我们就要计算横向所剩余的空间，再将这些空间平分，作为tag之间的间距和tag与指示器前端和后端的距离*/
                 int totalItemWidth = 0;
                 for(int i = 0; i < tags.size(); i++)
                 {
@@ -282,8 +290,9 @@ public class TextViewPagerIndicator extends ViewGroup
                 }
                 int space = (availableWidth - totalItemWidth) / (tags.size() + 1);
                 space = space < 0 ? 0 : space;
+                /*根据paddingLeft决定第一个TextView的偏离值*/
                 textOffset = getPaddingLeft() + space;
-
+                /*对子view进行布局*/
                 for(int i = 0; i < tags.size(); i++)
                 {
                     TextView child = tagMap.get(tags.get(i));
@@ -292,11 +301,12 @@ public class TextViewPagerIndicator extends ViewGroup
                     child.layout(left,
                             getPaddingTop() + padding, right,
                             getPaddingTop() + child.getMeasuredHeight() + padding);
-
+                    /*更新offset*/
                     textOffset += space + child.getMeasuredWidth();
                 }
             }else
             {
+                /*如果不是平衡布局，直接按照传入的textOffset来布局，此时更新textOffset时使用tag之间的间距，即interval*/
                 for(String s : tags)
                 {
                     TextView child = tagMap.get(s);
@@ -306,6 +316,7 @@ public class TextViewPagerIndicator extends ViewGroup
                 }
             }
 
+            /*最后对横线进行布局*/
             ViewGroup.LayoutParams layoutParams = indicatorLine.getLayoutParams();
             layoutParams.width = tagMap.get(tags.get(index)).getMeasuredWidth();
             indicatorLine.setLayoutParams(layoutParams);
@@ -350,17 +361,21 @@ public class TextViewPagerIndicator extends ViewGroup
         return true;
     }
 
+    /*本次事件流是否已经被判断为滑动事件*/
     private boolean moved = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction())
         {
+            /*按下的时候，对各个值进行赋值*/
             case MotionEvent.ACTION_DOWN:
                 newX = event.getRawX();
                 newY = event.getRawY();
                 downX = newX;
                 downY = newY;
                 break;
+            /*发生滑动时，先更新值，然后用前一次触摸点的坐标和本次坐标进行计算，如果x方向上的移动距离大于touchSlop，那么
+            * 就判断为滑动。*/
             case MotionEvent.ACTION_MOVE:
                 lastX = newX;
                 lastY = newY;
@@ -372,6 +387,9 @@ public class TextViewPagerIndicator extends ViewGroup
                 {
                     moved = true;
                 }
+                /*判断TextView的布局。tags太多的话，是允许滑动的，但是滑动也有限制，第一个tag的最左边不可以大于指示器的paddingLeft。
+                * 最后一个tag的最右边不可以小于（height - paddingRight）。然后以这个条件来计算滑动后的第一个tag最左边的位置。
+                * 并进行重新布局，横线的位置及长短也要相应改变。*/
                 int left = tagMap.get(tags.get(0)).getLeft();
                 int right = tagMap.get(tags.get(tags.size() - 1)).getRight();
                 int length = right - left;
@@ -393,7 +411,10 @@ public class TextViewPagerIndicator extends ViewGroup
                 layoutChildren(left, indicatorLine.getLeft() + (left - tagMap.get(tags.get(0)).getLeft()), indicatorLine.getWidth());
 
                 break;
+            /*抬起时，判断从起点到落点的距离是否超过了touchSlop，如果不是，我们就判断它是点击事件，执行点击回调函数。否则就什么也不做。另外
+            * 将moved设为false，收尾。*/
             case MotionEvent.ACTION_UP:
+
                 lastX = newX;
                 lastY = newY;
                 newX = event.getRawX();
@@ -422,10 +443,17 @@ public class TextViewPagerIndicator extends ViewGroup
         return super.onTouchEvent(event);
     }
 
+    /**使用在ViewPager.OnPageChangeListener.onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+    * 方法中，将三个参数原样传到该函数即可。
+     * @param position 当前可见的第一个页面的序号，如果positionOffset不为0,那么position + 1页面也是可见的。
+     * @param positionOffset 取值范围[0, 1)，表示当前position页面的偏离范围。
+     * @param positionOffsetPixels 当前position页面的偏离值。
+    * */
     public void listen(int position, float positionOffset, int positionOffsetPixels)
     {
         currentPosition = position;
-        if(positionOffset != 0)
+        /*需要让被选中的tag完整地显示出来，因此在tag布局在指示器的显示范围之外时需要移动，并且修改选中的和未选中的字的颜色。*/
+        if(positionOffset != 0.0f)
         {
             TextView current = tagMap.get(tags.get(position));
             TextView old = tagMap.get(tags.get(position + 1));
@@ -456,8 +484,20 @@ public class TextViewPagerIndicator extends ViewGroup
 
             current.setTextColor(evaluateColor(textColor, selectedTextColor, 1 - positionOffset));
             old.setTextColor(evaluateColor(textColor, selectedTextColor, positionOffset));
-
-
+        }else
+        {
+            /*positionOffset == 0时说明此时已经完成了页面切换，有且仅有一个页面是被完整显示的，此时只要根据被选择的序号来布局即可。关于颜色
+            * 改变，因为在positionOffset == 0时我们已经丢失了页面切换的信息，所以无法得知上一个被选中的页面是哪个。另外，positionOffset == 0
+            * 的情况实际上很极端，因此对于这种情况的处理并不影响大局，连这种情况的位置布局都可以不必考虑*/
+            TextView current = tagMap.get(tags.get(position));
+            if(current.getLeft() < getPaddingLeft())
+            {
+                textOffset += getPaddingLeft() - current.getLeft();
+            }else if(current.getRight() > getMeasuredWidth() - getPaddingRight())
+            {
+                textOffset += getMeasuredWidth() - getPaddingRight() - current.getRight();
+            }
+            layoutChildren(textOffset, position);
         }
 
     }
@@ -475,6 +515,7 @@ public class TextViewPagerIndicator extends ViewGroup
     public void addTag(String tag, int... index)
     {
         log.v("add tag");
+
         TextView t = new TextView(getContext());
 
         ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -506,6 +547,8 @@ public class TextViewPagerIndicator extends ViewGroup
     {
         tags.remove(tag);
         tagMap.remove(tag);
+        removeAllViews();
+        layoutChildren(textOffset, currentPosition);
     }
 
     public int getCurrentPosition()
@@ -529,6 +572,7 @@ public class TextViewPagerIndicator extends ViewGroup
         }
     }
 
+    /*回调监听器的方法，以当前被点击的tag序号为参数*/
     private void notifyOnTagClickedListsners(int position)
     {
         if(onTagClickedListeners.size() != 0)
@@ -539,6 +583,8 @@ public class TextViewPagerIndicator extends ViewGroup
             }
         }
     }
+
+    /**tag点击监听器接口*/
     public interface OnTagClickedListener
     {
         public void onTagClicked(int position);

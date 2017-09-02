@@ -13,10 +13,10 @@
         android:orientation="horizontal">
         <com.zu.customview.view.TextViewPagerIndicator
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            app:indicatorColor="#ff5499"
-            app:indicatorHeight="4dp"
+            android:layout_height="match_parent"
+            app:selectedTextColor="@color/colorAccent"
+            app:indicatorColor="@color/colorAccent"
+            app:indicatorHeight="5dp"
             app:textSize="8sp"
             app:textColor="#000000"
             app:intervalBetweenTags="30dp"
