@@ -2,6 +2,7 @@ package com.zu.customview.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParent;
@@ -26,6 +27,8 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
     private boolean layouted = false;
 
+    private View headView;
+    private View contentView;
 
     public HideHeadView(Context context) {
         this(context, null);
@@ -51,15 +54,16 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         if(changed)
         {
+            if(getChildCount() == 0 || layouted)
+            {
+                return;
+            }
             if(getChildCount() != 2)
             {
                 throw new IllegalArgumentException("HideHeadLayout must have 2 views, the first is head, and the second as content");
             }
 
-            if(getChildCount() == 0 || layouted)
-            {
-                return;
-            }
+
             int top = getPaddingTop();
 
 
@@ -77,18 +81,28 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if(getChildCount() == 0)
+        {
+            return;
+        }
         if(getChildCount() != 2)
         {
             throw new IllegalArgumentException("HideHeadLayout must have 2 views, the first is head, and the second as content");
         }
-        View head = getChildAt(0);
+        headView = getChildAt(0);
         int heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST);
         int widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY);
-        head.measure(widthSpec, heightSpec);
+        headView.measure(widthSpec, heightSpec);
 
-        View content = getChildAt(1);
-        heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.EXACTLY);
-        content.measure(widthSpec, heightSpec);
+        int headRemain = 0;
+        if(headView instanceof HeadInterface)
+        {
+            headRemain = ((HeadInterface) headView).getMinVisibleHeight();
+        }
+
+        contentView = getChildAt(1);
+        heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) - headRemain, MeasureSpec.EXACTLY);
+        contentView.measure(widthSpec, heightSpec);
 
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
@@ -101,43 +115,133 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     private int touchSlop = 2;
     private int lastScrollY = 0;
 
-    private void onSecondPointEvent(MotionEvent event)
+    private boolean isDragging = false;
+
+    private void onMultiPointEvent(MotionEvent event)
     {
         if(event.findPointerIndex(mActivePointId) == -1)
         {
             int newIndex = event.getActionIndex();
             mActivePointId = event.getPointerId(newIndex);
+            int dy = (int)event.getY(newIndex) - newY;
+            int dx = (int)event.getX(newIndex) - newX;
+            downY += dy;
+            downX += dx;
+            newY = (int)event.getY(newIndex);
+            newX = (int)event.getX(newIndex);
 
         }
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        switch (ev.getActionMasked())
+    private boolean shouldScrollY(int dy)
+    {
+        Rect visibleRect = getVisibleRect();
+        if(headView.getTop() >= visibleRect.top)
         {
-            case MotionEvent.ACTION_DOWN:
+            if(dy >= 0)
             {
-                if(!scroller.isFinished())
-                {
-                    scroller.forceFinished(true);
-                }
-                mActivePointId = ev.getPointerId(ev.getActionIndex());
-                newX = downX = oldX = (int)ev.getX();
-                newY = downY = oldY = (int)ev.getY();
-
+                return false;
+            }else
+            {
+                return true;
             }
-            break;
-            case MotionEvent.ACTION_POINTER_DOWN:
+        }else if(contentView.getBottom() <= visibleRect.bottom)
+        {
+            if(dy <= 0)
             {
-
+                return false;
+            }else
+            {
+                return true;
             }
         }
-        return super.onInterceptTouchEvent(ev);
+
+        return false;
+
     }
 
+    private int computeScrollOffsetY(int dy)
+    {
+        int mDy = dy;
+        Rect visibleRect = getVisibleRect();
+        if(mDy > 0)
+        {
+            if(headView.getTop() + mDy > visibleRect.top)
+            {
+                mDy = visibleRect.top - headView.getTop();
+            }
+            return mDy;
+        }else if(mDy < 0)
+        {
+            if(contentView.getBottom() + mDy < visibleRect.bottom)
+            {
+                mDy = visibleRect.bottom - contentView.getBottom();
+            }
+            return mDy;
+        }else
+        {
+            return 0;
+        }
+    }
+
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        boolean intercept = false;
+//        switch (ev.getActionMasked())
+//        {
+//            case MotionEvent.ACTION_DOWN:
+//            {
+//                if(!scroller.isFinished())
+//                {
+//                    scroller.forceFinished(true);
+//                }
+//                mActivePointId = ev.getPointerId(ev.getActionIndex());
+//                newX = downX = oldX = (int)ev.getX();
+//                newY = downY = oldY = (int)ev.getY();
+//                intercept = false;
+//            }
+//            break;
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//            case MotionEvent.ACTION_POINTER_UP:
+//            {
+//                onMultiPointEvent(ev);
+//                intercept = isDragging;
+//            }
+//            break;
+//            case MotionEvent.ACTION_MOVE:
+//            {
+//                oldX = newX;
+//                newY = oldY;
+//                int dy = newY - oldY;
+//
+//            }
+//        }
+//        return intercept;
+//    }
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        return super.onTouchEvent(event);
+//    }
+
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
+    public void computeScroll() {
+        if(scroller != null && scroller.computeScrollOffset())
+        {
+            int newScrollY = scroller.getCurrY();
+            int dy = newScrollY - lastScrollY;
+            offsetChildrenY(dy);
+            lastScrollY = newScrollY;
+        }
+    }
+
+    private void offsetChildrenY(int dy)
+    {
+        for(int i = 0; i < getChildCount(); i++)
+        {
+            View view = getChildAt(i);
+            view.offsetTopAndBottom(dy);
+        }
     }
 
     private void createOrUpdateVelocityTracker(MotionEvent event)
@@ -178,6 +282,17 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         }
         scroller.fling(0, 0, 0, (int)velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
+    }
+
+    private Rect getVisibleRect()
+    {
+        int mScrollY = getScrollY();
+        int mScrollX = getScrollX();
+        int top = getPaddingTop() + mScrollY;
+        int bottom = getMeasuredHeight() - getPaddingBottom() + mScrollY;
+        int left = getPaddingLeft() + mScrollX;
+        int right = getMeasuredWidth() - getPaddingRight() + mScrollX;
+        return new Rect(left, top, right, bottom);
     }
 
 
@@ -233,7 +348,8 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     /*NestedScrollingParent APIs*/
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-        return false;
+
+        return true;
     }
 
     @Override
