@@ -95,10 +95,43 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
     private VelocityTracker velocityTracker = null;
     private Scroller scroller = new Scroller(getContext());
+    private static final int INVALID_ID = -1;
+    private int mActivePointId = INVALID_ID;
+    private int downY, downX, oldX, oldY, newX, newY;
+    private int touchSlop = 2;
+    private int lastScrollY = 0;
+
+    private void onSecondPointEvent(MotionEvent event)
+    {
+        if(event.findPointerIndex(mActivePointId) == -1)
+        {
+            int newIndex = event.getActionIndex();
+            mActivePointId = event.getPointerId(newIndex);
+
+        }
+    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        switch (ev.getActionMasked())
+        {
+            case MotionEvent.ACTION_DOWN:
+            {
+                if(!scroller.isFinished())
+                {
+                    scroller.forceFinished(true);
+                }
+                mActivePointId = ev.getPointerId(ev.getActionIndex());
+                newX = downX = oldX = (int)ev.getX();
+                newY = downY = oldY = (int)ev.getY();
 
+            }
+            break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
+
+            }
+        }
         return super.onInterceptTouchEvent(ev);
     }
 
@@ -143,7 +176,8 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         {
             scroller.forceFinished(true);
         }
-        scroller.fling();
+        scroller.fling(0, 0, 0, (int)velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
     }
 
 

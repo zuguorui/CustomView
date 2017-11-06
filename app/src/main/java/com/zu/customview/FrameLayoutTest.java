@@ -26,7 +26,7 @@ public class FrameLayoutTest extends AppCompatActivity implements View.OnClickLi
         check.setOnClickListener(this);
         imageView = (ImageView)findViewById(R.id.Frame_imageView);
         imageView.setClickable(true);
-        root.setClickable(true);
+//        root.setClickable(true);
 //        button.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
 //            public boolean onTouch(View v, MotionEvent event) {
@@ -41,23 +41,24 @@ public class FrameLayoutTest extends AppCompatActivity implements View.OnClickLi
 //            }
 //        });
 
-//        root.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.v("FrameLayoutTest", "root onTouchListener");
-//                if (v.getId() == R.id.Frame_button)
-//                {
-//                    Log.v("FrameLayoutTest", "root onTouchListener, target is button");
-//                }else if(v.getId() == R.id.Frame_root)
-//                {
-//                    Log.v("FrameLayoutTest", "root onTouchListener, target is root");
-//                }else
-//                {
-//                    Log.v("FrameLayoutTest", "root onTouchListener");
-//                }
-//                return false;
-//            }
-//        });
+        root.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.v("FrameLayoutTest", "root onTouchListener");
+                Log.v("FrameLayoutTest", "action = " + event.getActionMasked());
+                if (v.getId() == R.id.Frame_button_press)
+                {
+                    Log.v("FrameLayoutTest", "root onTouchListener, target is button");
+                }else if(v.getId() == R.id.Frame_root)
+                {
+                    Log.v("FrameLayoutTest", "root onTouchListener, target is root");
+                }else
+                {
+                    Log.v("FrameLayoutTest", "root onTouchListener");
+                }
+                return false;
+            }
+        });
 
         root.setOnClickListener(new View.OnClickListener() {
             @Override
