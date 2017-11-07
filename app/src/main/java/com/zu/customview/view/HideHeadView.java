@@ -369,7 +369,17 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-
+        int[] parentConsumed = new int[2];
+        dispatchNestedPreScroll(dx, dy, parentConsumed, null);
+        int restY = dy - parentConsumed[1];
+        int restX = dx - parentConsumed[0];
+        if(shouldScrollY(restY))
+        {
+            int scrollOffset = computeScrollOffsetY(restY);
+            offsetChildrenY(scrollOffset);
+            consumed[1] = restY - scrollOffset;
+        }
+        consumed[0] = restX;
     }
 
     @Override
