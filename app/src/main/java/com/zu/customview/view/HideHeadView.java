@@ -133,6 +133,8 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         }
     }
 
+
+
     private boolean shouldScrollY(int dy)
     {
         Rect visibleRect = getVisibleRect();
@@ -184,7 +186,21 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         }
     }
 
-//    @Override
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(ev.getActionMasked() == MotionEvent.ACTION_DOWN)
+        {
+            if(!scroller.isFinished())
+            {
+                scroller.forceFinished(true);
+            }
+        }
+        return false;
+    }
+
+
+
+    //    @Override
 //    public boolean onInterceptTouchEvent(MotionEvent ev) {
 //        boolean intercept = false;
 //        switch (ev.getActionMasked())
@@ -224,14 +240,48 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 //        return super.onTouchEvent(event);
 //    }
 
+    private void startScroll(int startX, int startY, int dx, int dy)
+    {
+        stopScroll();
+        lastScrollY = startY;
+        scroller.startScroll(startX, startY, dx, dy);
+    }
+
+    private void startFling(int velocityX, int velocityY)
+    {
+        stopScroll();
+        lastScrollY = 0;
+        scroller.fling(0 , 0, velocityX, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+    }
+
+    private void stopScroll()
+    {
+        if(!scroller.isFinished())
+        {
+            scroller.forceFinished(true);
+        }
+    }
+
     @Override
     public void computeScroll() {
         if(scroller != null && scroller.computeScrollOffset())
         {
             int newScrollY = scroller.getCurrY();
             int dy = newScrollY - lastScrollY;
-            offsetChildrenY(dy);
-            lastScrollY = newScrollY;
+            int offset = computeScrollOffsetY(dy);
+            if(offset != 0)
+            {
+                offsetChildrenY(dy);
+                lastScrollY = newScrollY;
+                invalidate();
+            }else
+            {
+                scroller.forceFinished(true);
+                lastScrollY = 0;
+            }
+
+
         }
     }
 
@@ -298,6 +348,9 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
 
 
+    private boolean parentConsumeNestedScroll = false;
+    private boolean parentConsumeNestedFling = false;
+    private boolean scrollOrFling = false;
     /*NestedScrollingChild APIs*/
     @Override
     public void setNestedScrollingEnabled(boolean enabled) {
@@ -348,48 +401,125 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     /*NestedScrollingParent APIs*/
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+        parentConsumeNestedScroll = startNestedScroll(nestedScrollAxes);
+        if((ViewCompat.SCROLL_AXIS_VERTICAL & nestedScrollAxes) == ViewCompat.SCROLL_AXIS_VERTICAL)
+        {
+            return true;
+        }else {
+            return parentConsumeNestedScroll;
+        }
 
-        return true;
     }
 
     @Override
     public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes) {
         mNestedParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
+
     }
 
     @Override
     public void onStopNestedScroll(View target) {
         mNestedParentHelper.onStopNestedScroll(target);
+        if(parentConsumeNestedScroll)
+        {
+            stopNestedScroll();
+            parentConsumeNestedScroll = false;
+        }
     }
 
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-
+        if(shouldScrollY(dyUnconsumed))
+        {
+            int scrollOffsetY = computeScrollOffsetY(dyUnconsumed);
+            offsetChildrenY(scrollOffsetY);
+            dyUnconsumed -= scrollOffsetY;
+            dyConsumed += scrollOffsetY;
+        }
+        if(parentConsumeNestedScroll)
+        {
+            dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null);
+        }
     }
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-        int[] parentConsumed = new int[2];
-        dispatchNestedPreScroll(dx, dy, parentConsumed, null);
-        int restY = dy - parentConsumed[1];
-        int restX = dx - parentConsumed[0];
-        if(shouldScrollY(restY))
+        if(parentConsumeNestedScroll)
         {
-            int scrollOffset = computeScrollOffsetY(restY);
-            offsetChildrenY(scrollOffset);
-            consumed[1] = restY - scrollOffset;
+            int[] parentConsumed = new int[2];
+            dispatchNestedPreScroll(dx, dy, parentConsumed, null);
+            int restY = dy - parentConsumed[1];
+            int restX = dx - parentConsumed[0];
+            if(shouldScrollY(restY))
+            {
+                int scrollOffset = computeScrollOffsetY(restY);
+                offsetChildrenY(scrollOffset);
+                consumed[1] = restY - scrollOffset;
+            }
+            consumed[0] = restX;
+        }else
+        {
+            if(shouldScrollY(dy))
+            {
+                int scrollOffset = computeScrollOffsetY(dy);
+                offsetChildrenY(scrollOffset);
+                consumed[1] = dy - scrollOffset;
+            }
+            consumed[0] = dx;
         }
-        consumed[0] = restX;
+
     }
 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
-        return false;
+//        if(consumed)
+//        {
+//            return false;
+//        }
+
+        if(Math.abs(velocityX) > Math.abs(velocityY))
+        {
+            return dispatchNestedFling(velocityX, velocityY, consumed);
+        }else
+        {
+            if((velocityY > 0 && shouldScrollY(1)) || (velocityY < 0 && shouldScrollY(-1)))
+            {
+                if(!scroller.isFinished())
+                {
+                    scroller.forceFinished(true);
+                }
+                lastScrollY = 0;
+                scroller.fling(0, 0, 0, (int)velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+                return true;
+            }else
+            {
+                scroller.getCurrVelocity();
+                return dispatchNestedFling(velocityX, velocityY, consumed);
+            }
+
+        }
+
     }
 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
-        return false;
+        if(Math.abs(velocityX) > Math.abs(velocityY))
+        {
+            return dispatchNestedPreFling(velocityX, velocityY);
+        }else
+        {
+            if((velocityY > 0 && shouldScrollY(1)) || (velocityY < 0 && shouldScrollY(-1)))
+            {
+                startFling(0, (int)velocityY);
+                return true;
+            }else
+            {
+
+                return dispatchNestedPreFling(velocityX, velocityY);
+            }
+
+        }
+
     }
 
     @Override

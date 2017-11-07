@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -43,9 +43,11 @@
         <activity android:name=".MediaScanActivity" />
         <activity android:name=".ImageCheckActivity" />
         <activity android:name=".ViewImageActivity" />
-        <activity android:name=".swiftp.FtpActivity"></activity>
-        <service android:name=".swiftp.FsService"/>
+        <activity android:name=".swiftp.FtpActivity" />
+
+        <service android:name=".swiftp.FsService" />
         <service android:name=".swiftp.NsdService" />
+
         <receiver
             android:name=".swiftp.NsdService$StartStopReceiver"
             android:exported="false">
@@ -64,7 +66,6 @@
                 <action android:name="be.ppareit.swiftp.ACTION_STOP_FTPSERVER" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".swiftp.WifiStateChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
@@ -73,6 +74,8 @@
 
         <service android:name=".swiftp.WifiStateChangeReceiver$StartServerService" />
         <service android:name=".swiftp.WifiStateChangeReceiver$StopServerService" />
+
+        <activity android:name=".HideHeadTestActivity"></activity>
     </application>
 
 </manifest>
