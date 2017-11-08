@@ -1,7 +1,6 @@
 package com.zu.customview.view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.annotation.Px;
 import android.support.v4.view.NestedScrollingChild;
@@ -9,7 +8,6 @@ import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -23,7 +21,7 @@ import com.zu.customview.MyLog;
  * Created by zu on 2017/11/4.
  */
 
-public class HideHeadView extends ViewGroup implements NestedScrollingParent, NestedScrollingChild {
+public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, NestedScrollingChild {
 
     private MyLog log = new MyLog("HideHeadView", true);
     private final NestedScrollingChildHelper mNestedChildHelper;
@@ -34,19 +32,19 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     private View headView;
     private View contentView;
 
-    public HideHeadView(Context context) {
+    public HideHeadLayout(Context context) {
         this(context, null);
     }
 
-    public HideHeadView(Context context, AttributeSet attrs) {
+    public HideHeadLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HideHeadView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HideHeadLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public HideHeadView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public HideHeadLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mNestedChildHelper = new NestedScrollingChildHelper(this);
         mNestedParentHelper = new NestedScrollingParentHelper(this);
@@ -140,11 +138,29 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         }
     }
 
+    private int getHeadRemainSpace()
+    {
+        if(headView instanceof HeadInterface)
+        {
+            return ((HeadInterface) headView).getMinVisibleHeight();
+        }
+        return 0;
+    }
 
+    private void notifyHeadHeight()
+    {
+        if(headView instanceof HeadInterface)
+        {
+            Rect rect = getVisibleRect();
+            ((HeadInterface) headView).onHidenSpace(rect.top - headView.getTop());
+        }
+
+    }
 
     private boolean shouldScrollY(int dy)
     {
         Rect visibleRect = getVisibleRect();
+
         if(dy > 0)
         {
             if(headView.getTop() < visibleRect.top)
@@ -166,7 +182,7 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         }
 
 
-        return false;
+        return true;
 
     }
 
@@ -277,35 +293,34 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
         {
             int newScrollY = scroller.getCurrY();
             int dy = newScrollY - lastScrollY;
+            log.d("computeScroll, dy = " + dy);
             int offset = computeScrollOffsetY(dy);
+            log.d("computeScroll, offset = " + offset);
             if(offset != 0)
             {
 //                offsetChildrenY(dy);
-                scrollBy(0, -dy);
+
+                scrollBy(0, -offset);
                 lastScrollY = newScrollY;
-                if(headView instanceof HeadInterface)
-                {
 
-                }
-                invalidate();
-            }else
+            }else if(!shouldScrollY(dy))
             {
-                scroller.forceFinished(true);
-                lastScrollY = 0;
+                stopScroll();
+                return;
             }
-
+            invalidate();
 
         }
     }
 
-    private void offsetChildrenY(int dy)
-    {
-        for(int i = 0; i < getChildCount(); i++)
-        {
-            View view = getChildAt(i);
-            view.offsetTopAndBottom(dy);
-        }
-    }
+//    private void offsetChildrenY(int dy)
+//    {
+//        for(int i = 0; i < getChildCount(); i++)
+//        {
+//            View view = getChildAt(i);
+//            view.offsetTopAndBottom(dy);
+//        }
+//    }
 
     private void createOrUpdateVelocityTracker(MotionEvent event)
     {
@@ -364,6 +379,8 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     private boolean parentConsumeNestedScroll = false;
     private boolean parentConsumeNestedFling = false;
     private boolean scrollOrFling = false;
+    private boolean headFirstScroll = false;
+    private long upEventTime = 0l;
     /*NestedScrollingChild APIs*/
     @Override
     public void setNestedScrollingEnabled(boolean enabled) {
@@ -447,9 +464,9 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         log.d("onNestedScroll");
 
-        if(shouldScrollY(-dyConsumed))
+        if(shouldScrollY(-dyUnconsumed))
         {
-            int scrollOffsetY = computeScrollOffsetY(-dxConsumed);
+            int scrollOffsetY = computeScrollOffsetY(-dyUnconsumed);
 //            offsetChildrenY(scrollOffsetY);
             scrollBy(0, -scrollOffsetY);
             dyConsumed += -scrollOffsetY;
@@ -473,13 +490,13 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
             if(shouldScrollY(-restY))
             {
                 int scrollOffset = computeScrollOffsetY(-restY);
-                offsetChildrenY(scrollOffset);
+                scrollBy(0, -scrollOffset);
                 consumed[1] = parentConsumed[1] - scrollOffset;
             }
             consumed[0] = parentConsumed[0];
         }else
         {
-            if(shouldScrollY(-dy))
+            if(shouldScrollY(-dy) && headFirstScroll)
             {
                 int scrollOffset = computeScrollOffsetY(-dy);
 //                offsetChildrenY(scrollOffset);
@@ -487,6 +504,9 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
                 log.d("scrollOffset = " + scrollOffset);
                 consumed[1] = -scrollOffset;
 //                consumed[1] = dy;
+            }else
+            {
+                consumed[1] = 0;
             }
             consumed[0] = 0;
         }
@@ -497,22 +517,28 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     public void scrollTo(@Px int x, @Px int y) {
 
         int realMoveY = y;
-        if(realMoveY > headView.getBottom())
+        int headRemain = getHeadRemainSpace();
+        if(realMoveY > headView.getBottom() - headRemain)
         {
-            realMoveY = headView.getBottom();
+            realMoveY = headView.getBottom() - headRemain;
         }else if(realMoveY < headView.getTop())
         {
             realMoveY = headView.getTop();
         }
+        log.d("scrollTo, dy = " + realMoveY);
         super.scrollTo(x, realMoveY);
     }
 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
-//        if(consumed)
-//        {
-//            return false;
-//        }
+
+        log.d("onNestedFling, velocityY = " + (int)velocityY);
+
+
+        if(consumed)
+        {
+            velocityY =
+        }
 
         if(Math.abs(velocityX) > Math.abs(velocityY))
         {
@@ -534,12 +560,17 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+
+        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
+
+
         if(Math.abs(velocityX) > Math.abs(velocityY))
         {
             return dispatchNestedPreFling(velocityX, velocityY);
+
         }else
         {
-            if((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1)))
+            if(((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1))) && headFirstScroll)
             {
                 startFling(0, -(int)velocityY);
                 return true;
@@ -551,6 +582,7 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
 
         }
 
+
     }
 
     @Override
@@ -561,9 +593,9 @@ public class HideHeadView extends ViewGroup implements NestedScrollingParent, Ne
     public interface HeadInterface{
         /**
          * 在滑动head的过程中会将目前的进程情况通知给Head，以便head做出一些响应。
-         * @param process:[0, 1], 完全显示时为0， 完全隐藏时为1。
+         * @param hiddenHeight:被隐藏的高度。
          * */
-        void onHideProcess(float process);
+        void onHidenSpace(int hiddenHeight);
         /**
          * 获取Head至少要显示的高度，在滑动过程中会保留响应的高度，不会完全隐藏head
          *
