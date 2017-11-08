@@ -90,6 +90,11 @@
                 android:layout_height="wrap_content"
                 android:text="ftp test"
                 android:id="@+id/ftp_test"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HideHead Test"
+                android:id="@+id/hide_head"/>
         </LinearLayout>
     </ScrollView>
 

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button imageCheckTestButton;
     private Button galleryTestButton;
     private Button ftpTestButton;
+    private Button hideHeadTestButton;
 
     private Observer observer = new Observer() {
         @Override
@@ -128,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ftpTestButton = (Button)findViewById(R.id.ftp_test);
         ftpTestButton.setOnClickListener(this);
 
+        hideHeadTestButton = (Button)findViewById(R.id.hide_head);
+        hideHeadTestButton.setOnClickListener(this);
+
     }
 
 
@@ -194,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ftp_test:
                 Intent intent14 = new Intent(this, FtpActivity.class);
                 startActivity(intent14);
+                break;
+            case R.id.hide_head:
+                Intent intent15 = new Intent(this, HideHeadTestActivity.class);
+                startActivity(intent15);
                 break;
             default:
                 break;

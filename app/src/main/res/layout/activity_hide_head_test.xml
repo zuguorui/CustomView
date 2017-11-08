@@ -8,7 +8,7 @@
     tools:context="com.zu.customview.HideHeadTestActivity">
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="200dp"
         android:background="#00ff55"
         android:nestedScrollingEnabled="true"
         android:id="@+id/HideHeadActivity_imageView"/>
@@ -19,4 +19,18 @@
         android:id="@+id/HideHeadActivity_listView">
 
     </ListView>
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:nestedScrollingEnabled="true">-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+            <!--<ImageView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:src="@drawable/chuyin"-->
+                <!--android:nestedScrollingEnabled="true"/>-->
+        <!--</LinearLayout>-->
+    <!--</ScrollView>-->
 </com.zu.customview.view.HideHeadView>
