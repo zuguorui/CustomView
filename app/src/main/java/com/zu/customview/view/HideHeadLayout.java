@@ -1,18 +1,24 @@
 package com.zu.customview.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Px;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ScrollView;
 import android.widget.Scroller;
 
 import com.zu.customview.MyLog;
@@ -32,6 +38,17 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private View headView;
     private View contentView;
 
+    private ScrollerCompat scrollerCompat;
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            return true;
+        }
+    });
+
+
+
     public HideHeadLayout(Context context) {
         this(context, null);
     }
@@ -49,7 +66,6 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         mNestedChildHelper = new NestedScrollingChildHelper(this);
         mNestedParentHelper = new NestedScrollingParentHelper(this);
         setNestedScrollingEnabled(true);
-
     }
 
     @Override
@@ -78,6 +94,45 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 top += view.getMeasuredHeight();
             }
             layouted = true;
+        }
+    }
+
+    private void animatePosition()
+    {
+        if(isScrollerRunning() || isTouching)
+        {
+            return;
+        }
+        stopScroll();
+        Rect visibleRect = getVisibleRect();
+        int offset = Math.abs(visibleRect.top - headView.getTop());
+        int headHeight = headView.getHeight() - getHeadRemainSpace();
+        if(headHeight - offset < offset)
+        {
+
+            startScroll(0, contentView.getBottom(), 0, visibleRect.bottom - contentView.getBottom(), 600);
+
+        }else
+        {
+
+            startScroll(0, headView.getTop(), 0, visibleRect.top - headView.getTop(), 600);
+
+        }
+    }
+
+    private void stopAnimatePosition()
+    {
+        stopScroll();
+    }
+
+    private boolean isScrollerRunning()
+    {
+        if(scroller != null && scroller.computeScrollOffset())
+        {
+            return true;
+        }else
+        {
+            return false;
         }
     }
 
@@ -114,6 +169,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     private VelocityTracker velocityTracker = null;
     private Scroller scroller = new Scroller(getContext());
+    private boolean isTouching = false;
     private static final int INVALID_ID = -1;
     private int mActivePointId = INVALID_ID;
     private int downY, downX, oldX, oldY, newX, newY;
@@ -212,13 +268,29 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if(ev.getActionMasked() == MotionEvent.ACTION_DOWN)
+        switch (ev.getAction())
         {
-            if(!scroller.isFinished())
-            {
-                scroller.forceFinished(true);
-            }
+            case MotionEvent.ACTION_DOWN:
+                log.d("ACTION_DOWN");
+                stopScroll();
+                isTouching = true;
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                log.d("ACTION_UP");
+                isTouching = false;
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        animatePosition();
+                    }
+                }, 400);
+                break;
+            default:
+                break;
         }
+
         return false;
     }
 
@@ -264,11 +336,12 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 //        return super.onTouchEvent(event);
 //    }
 
-    private void startScroll(int startX, int startY, int dx, int dy)
+    private void startScroll(int startX, int startY, int dx, int dy, int duration)
     {
         stopScroll();
         lastScrollY = startY;
-        scroller.startScroll(startX, startY, dx, dy);
+        scroller.startScroll(startX, startY, dx, dy, duration);
+        invalidate();
     }
 
     private void startFling(int velocityX, int velocityY)
@@ -276,8 +349,10 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         stopScroll();
         lastScrollY = 0;
         scroller.fling(0 , 0, velocityX, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
-
+        invalidate();
     }
+
+
 
     private void stopScroll()
     {
@@ -289,13 +364,31 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void computeScroll() {
-        if(scroller != null && scroller.computeScrollOffset())
+        if(scroller == null)
+        {
+            return;
+        }else if(!scroller.computeScrollOffset())
+        {
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animatePosition();
+                }
+            }, 400);
+            return;
+        }else
         {
             int newScrollY = scroller.getCurrY();
+//            if(waitFling)
+//            {
+//                lastScrollY = newScrollY;
+//                invalidate();
+//                return;
+//            }
             int dy = newScrollY - lastScrollY;
-            log.d("computeScroll, dy = " + dy);
+//            log.d("computeScroll, dy = " + dy);
             int offset = computeScrollOffsetY(dy);
-            log.d("computeScroll, offset = " + offset);
+//            log.d("computeScroll, offset = " + offset);
             if(offset != 0)
             {
 //                offsetChildrenY(dy);
@@ -379,7 +472,8 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private boolean parentConsumeNestedScroll = false;
     private boolean parentConsumeNestedFling = false;
     private boolean scrollOrFling = false;
-    private boolean headFirstScroll = false;
+    private boolean headFirstScroll = true;
+    private boolean waitFling = false;
     private long upEventTime = 0l;
     /*NestedScrollingChild APIs*/
     @Override
@@ -453,11 +547,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     public void onStopNestedScroll(View target) {
         log.d("onStopNestedScroll");
         mNestedParentHelper.onStopNestedScroll(target);
+//        waitFling = false;
         if(parentConsumeNestedScroll)
         {
             stopNestedScroll();
             parentConsumeNestedScroll = false;
         }
+
     }
 
     @Override
@@ -525,36 +621,31 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             realMoveY = headView.getTop();
         }
-        log.d("scrollTo, dy = " + realMoveY);
+//        log.d("scrollTo, dy = " + realMoveY);
         super.scrollTo(x, realMoveY);
     }
 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
 
-        log.d("onNestedFling, velocityY = " + (int)velocityY);
+        log.d("onNestedFling, velocityY = " + (int)velocityY + ", consumed = " + consumed);
+        return dispatchNestedFling(velocityX, velocityY, consumed);
 
-
-        if(consumed)
-        {
-            velocityY =
-        }
-
-        if(Math.abs(velocityX) > Math.abs(velocityY))
-        {
-            return dispatchNestedFling(velocityX, velocityY, consumed);
-        }else
-        {
-            if((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1)))
-            {
-                startFling(0, -(int)velocityY);
-                return true;
-            }else
-            {
-                return dispatchNestedFling(velocityX, velocityY, consumed);
-            }
-
-        }
+//        if(Math.abs(velocityX) > Math.abs(velocityY))
+//        {
+//            return dispatchNestedFling(velocityX, velocityY, consumed);
+//        }else
+//        {
+//            if(((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1))) && headFirstScroll)
+//            {
+//                startFling(0, -(int)velocityY);
+//                return true;
+//            }else
+//            {
+//                return dispatchNestedFling(velocityX, velocityY, consumed);
+//            }
+//
+//        }
 
     }
 
@@ -568,16 +659,23 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             return dispatchNestedPreFling(velocityX, velocityY);
 
+        }else if(dispatchNestedPreFling(velocityX, velocityY)){
+            return true;
         }else
         {
-            if(((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1))) && headFirstScroll)
+            if(((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1))))
             {
+//                waitFling = !headFirstScroll;
                 startFling(0, -(int)velocityY);
+                log.d("onNestedPreFling, start fling");
+
+
                 return true;
             }else
             {
 
                 return dispatchNestedPreFling(velocityX, velocityY);
+
             }
 
         }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <com.zu.customview.view.HideHeadLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,29 +9,40 @@
     tools:context="com.zu.customview.HideHeadTestActivity">
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#00ff55"
+        android:layout_height="100dp"
+        android:background="#00ff00"
         android:nestedScrollingEnabled="true"
-        android:id="@+id/HideHeadActivity_imageView"/>
-    <ListView
+        android:id="@+id/HideHeadActivity_imageView1"/>
+    <com.zu.customview.view.HideHeadLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:nestedScrollingEnabled="true"
-        android:id="@+id/HideHeadActivity_listView">
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="#0000ff"
+            android:nestedScrollingEnabled="true"
+            android:id="@+id/HideHeadActivity_imageView2"/>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nestedScrollingEnabled="true"
+            android:id="@+id/HideHeadActivity_listView">
 
-    </ListView>
-    <!--<ScrollView-->
+        </ListView>
+        <!--<ScrollView-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->
         <!--android:nestedScrollingEnabled="true">-->
         <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
-            <!--<ImageView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:src="@drawable/chuyin"-->
-                <!--android:nestedScrollingEnabled="true"/>-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@drawable/chuyin"-->
+        <!--android:nestedScrollingEnabled="true"/>-->
         <!--</LinearLayout>-->
-    <!--</ScrollView>-->
+        <!--</ScrollView>-->
+    </com.zu.customview.view.HideHeadLayout>
+
 </com.zu.customview.view.HideHeadLayout>

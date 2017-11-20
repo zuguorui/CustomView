@@ -24,8 +24,7 @@ public class HideHeadTestActivity extends AppCompatActivity {
 
     private void initViews()
     {
-        imageView = (ImageView)findViewById(R.id.HideHeadActivity_imageView);
-        imageView.setNestedScrollingEnabled(true);
+
         listView = (ListView)findViewById(R.id.HideHeadActivity_listView);
         listView.setNestedScrollingEnabled(true);
         SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.list_item, new String[]{"name"}, new int[]{R.id.ListItem_index});
