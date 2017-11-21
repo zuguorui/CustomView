@@ -4,7 +4,9 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.os.StrictMode;
 import android.support.annotation.Px;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
@@ -23,6 +25,8 @@ import android.widget.Scroller;
 
 import com.zu.customview.MyLog;
 
+import java.util.ArrayList;
+
 /**
  * Created by zu on 2017/11/4.
  */
@@ -38,14 +42,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private View headView;
     private View contentView;
 
-    private ScrollerCompat scrollerCompat;
-
-    private Handler mHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            return true;
-        }
-    });
+    private SingleTimedTaskQueue animateThread = new SingleTimedTaskQueue();
 
 
 
@@ -66,6 +63,10 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         mNestedChildHelper = new NestedScrollingChildHelper(this);
         mNestedParentHelper = new NestedScrollingParentHelper(this);
         setNestedScrollingEnabled(true);
+        if(!animateThread.isAlive())
+        {
+            animateThread.start();
+        }
     }
 
     @Override
@@ -107,10 +108,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         Rect visibleRect = getVisibleRect();
         int offset = Math.abs(visibleRect.top - headView.getTop());
         int headHeight = headView.getHeight() - getHeadRemainSpace();
-        if(headHeight - offset < offset)
+        if(offset <= 0 || offset >= headHeight)
+        {
+            return;
+        }else if(headHeight - offset < offset)
         {
 
-            startScroll(0, contentView.getBottom(), 0, visibleRect.bottom - contentView.getBottom(), 600);
+            startScroll(0, headView.getTop(), 0, visibleRect.top - headHeight - headView.getTop(), 600);
 
         }else
         {
@@ -267,12 +271,14 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction())
         {
             case MotionEvent.ACTION_DOWN:
                 log.d("ACTION_DOWN");
+                stopAnimatePosition();
                 stopScroll();
+                Looper.myQueue();
                 isTouching = true;
                 break;
 
@@ -280,19 +286,21 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             case MotionEvent.ACTION_UP:
                 log.d("ACTION_UP");
                 isTouching = false;
-                postDelayed(new Runnable() {
+
+                animateThread.enqueueTaskDelayed(new Runnable() {
                     @Override
                     public void run() {
                         animatePosition();
                     }
-                }, 400);
+                }, 600);
                 break;
             default:
                 break;
         }
-
-        return false;
+        return super.dispatchTouchEvent(ev);
     }
+
+
 
 
 
@@ -369,12 +377,12 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             return;
         }else if(!scroller.computeScrollOffset())
         {
-            postDelayed(new Runnable() {
+            animateThread.enqueueTaskDelayed(new Runnable() {
                 @Override
                 public void run() {
                     animatePosition();
                 }
-            }, 400);
+            }, 600);
             return;
         }else
         {
@@ -700,6 +708,90 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
          * @return :返回head至少要保留的可见高度，滑动时不会完全隐藏head。
          * */
         int getMinVisibleHeight();
+    }
+
+    private class SingleTimedTaskQueue extends Thread{
+
+        private ArrayList<Runnable> task = new ArrayList<>();
+        private long delayedTime = 0l;
+
+        private long taskEnqueueTime = 0l;
+        private long taskSetTime = 0l;
+
+
+
+        public void enqueueTask(Runnable runnable)
+        {
+            synchronized (task)
+            {
+                task.clear();
+                task.add(runnable);
+                delayedTime = 0l;
+                taskEnqueueTime = System.currentTimeMillis();
+                task.notify();
+                log.d("task notified");
+            }
+        }
+
+        public void enqueueTaskDelayed(Runnable runnable, long delayedTime)
+        {
+            synchronized (task)
+            {
+                log.d("task locked by " + Thread.currentThread().getName());
+                task.clear();
+                task.add(runnable);
+                this.delayedTime = delayedTime;
+                taskEnqueueTime = System.currentTimeMillis();
+                task.notify();
+                log.d("task notified");
+            }
+
+
+        }
+
+        @Override
+        public void run(){
+            synchronized (task){
+                log.d("task locked by " + Thread.currentThread().getName());
+                while(true)
+                {
+                    try{
+                        log.d("task wait first");
+                        if(task.size() == 0)
+                        {
+                            task.wait();
+                        }
+
+                        if(delayedTime == 0l)
+                        {
+                            post(task.get(0));
+                            task.clear();
+                        }else
+                        {
+                            while(true)
+                            {
+                                taskSetTime = taskEnqueueTime;
+                                log.d("task wait second");
+                                task.wait(delayedTime);
+                                if(taskEnqueueTime == taskSetTime)
+                                {
+                                    post(task.get(0));
+                                    task.clear();
+                                    break;
+                                }
+                            }
+
+                        }
+
+                    }catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            }
+        }
     }
 
 
