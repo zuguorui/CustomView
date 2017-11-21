@@ -30,7 +30,9 @@ import java.util.ArrayList;
 /**
  * Created by zu on 2017/11/4.
  */
-
+/**
+ * This layout scrolls views by changing mScrollY, so if you want to change the logic of dealing with touch event, keeping an eye on touch event transforming.
+ * */
 public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, NestedScrollingChild {
 
     private MyLog log = new MyLog("HideHeadView", true);
@@ -303,7 +305,6 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
 
 
-
     //    @Override
 //    public boolean onInterceptTouchEvent(MotionEvent ev) {
 //        boolean intercept = false;
@@ -478,11 +479,18 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
 
     private boolean parentConsumeNestedScroll = false;
-    private boolean parentConsumeNestedFling = false;
     private boolean scrollOrFling = false;
     private boolean headFirstScroll = true;
-    private boolean waitFling = false;
-    private long upEventTime = 0l;
+    private boolean reactOnDragHead = false;
+
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean intercepted = false;
+
+        return super.onInterceptTouchEvent(ev);
+    }
+
     /*NestedScrollingChild APIs*/
     @Override
     public void setNestedScrollingEnabled(boolean enabled) {
