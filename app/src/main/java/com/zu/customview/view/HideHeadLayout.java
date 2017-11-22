@@ -65,6 +65,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         mNestedChildHelper = new NestedScrollingChildHelper(this);
         mNestedParentHelper = new NestedScrollingParentHelper(this);
         setNestedScrollingEnabled(true);
+//        setClickable(true);
         if(!animateThread.isAlive())
         {
             animateThread.start();
@@ -181,8 +182,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private int downY, downX, oldX, oldY, newX, newY;
     private int touchSlop = 2;
     private int lastScrollY = 0;
+    private boolean downInHead = false;
 
     private boolean isDragging = false;
+
+    private boolean parentConsumeNestedScroll = false;
+    private boolean headFirstScroll = true;
+    private boolean reactOnDragHead = true;
 
     private void onMultiPointEvent(MotionEvent event)
     {
@@ -194,8 +200,9 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             int dx = (int)event.getX(newIndex) - newX;
             downY += dy;
             downX += dx;
-            newY = (int)event.getY(newIndex);
-            newX = (int)event.getX(newIndex);
+
+            newY = oldY = (int)event.getY(newIndex);
+            newX = oldX = (int)event.getX(newIndex);
 
         }
     }
@@ -274,10 +281,12 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        boolean consumed =  super.dispatchTouchEvent(ev);
         switch (ev.getAction())
         {
             case MotionEvent.ACTION_DOWN:
-                log.d("ACTION_DOWN");
+//                log.d("ACTION_DOWN");
                 stopAnimatePosition();
                 stopScroll();
                 Looper.myQueue();
@@ -285,10 +294,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 break;
 
             case MotionEvent.ACTION_CANCEL:
+//                log.d("ACTION_CANCEL");
             case MotionEvent.ACTION_UP:
-                log.d("ACTION_UP");
+//                log.d("ACTION_UP");
                 isTouching = false;
-
+                downInHead = false;
+                isDragging = false;
+                recycleVelocityTracker();
                 animateThread.enqueueTaskDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -299,51 +311,151 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             default:
                 break;
         }
-        return super.dispatchTouchEvent(ev);
+        return downInHead || consumed;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(!reactOnDragHead)
+        {
+            return false;
+        }
+
+        boolean intercepted = false;
+        MotionEvent tempEvent = MotionEvent.obtain(ev);
+//        tempEvent.offsetLocation(0, getScrollY());
+
+        createOrUpdateVelocityTracker(ev);
+        switch (tempEvent.getActionMasked())
+        {
+            case MotionEvent.ACTION_DOWN:
+//                log.d("ACTION_DOWN");
+                intercepted = false;
+                newX = downX = (int)tempEvent.getX();
+                newY = downY = (int)tempEvent.getY();
+                mActivePointId = tempEvent.getPointerId(0);
+                if(downY <= headView.getBottom() && downY >= headView.getTop()
+                        && downX <= headView.getRight() && downX >= headView.getLeft())
+                {
+                    downInHead = true;
+                }
+                break;
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//                log.d("ACTION_POINTER_DOWN");
+//                onMultiPointEvent(tempEvent);
+//                break;
+            case MotionEvent.ACTION_MOVE:
+//                log.d("ACTION_MOVE");
+                oldX = newX;
+                oldY = newY;
+                newX = (int)tempEvent.getX();
+                newY = (int)tempEvent.getY();
+                int dy = newY - oldY;
+                int disY = newY - downY;
+                if(!isDragging)
+                {
+                    if(dy >= touchSlop || disY >= touchSlop)
+                    {
+                        isDragging = true;
+                    }
+                }
+                if(isDragging && downInHead)
+                {
+                    intercepted = true;
+                }
+                break;
+//            case MotionEvent.ACTION_POINTER_UP:
+//                onMultiPointEvent(tempEvent);
+//                log.d("ACTION_POINTER_UP");
+//                break;
+            case MotionEvent.ACTION_UP:
+//                log.d("ACTION_UP");
+                break;
+            case MotionEvent.ACTION_CANCEL:
+//                log.d("ACTION_CANCEL");
+                break;
+            default:
+                break;
+
+
+        }
+        return intercepted;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean consumed = false;
+        MotionEvent tempEvent = MotionEvent.obtain(event);
+
+        createOrUpdateVelocityTracker(event);
+        switch (tempEvent.getActionMasked())
+        {
+//            case MotionEvent.ACTION_DOWN:
+//                log.d("ACTION_DOWN");
+//                consumed = false;
+//                newX = downX = (int)tempEvent.getX();
+//                newY = downY = (int)tempEvent.getY();
+//                mActivePointId = tempEvent.getPointerId(0);
+//                if(downY <= headView.getBottom() && downY >= headView.getTop()
+//                        && downX <= headView.getRight() && downX >= headView.getLeft())
+//                {
+//                    downInHead = true;
+//                }
+//                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                log.d("ACTION_POINTER_DOWN");
+                onMultiPointEvent(tempEvent);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                log.d("ACTION_MOVE");
+                oldX = newX;
+                oldY = newY;
+                newX = (int)tempEvent.getX();
+                newY = (int)tempEvent.getY();
+                int dy = newY - oldY;
+                int disY = newY - downY;
+                if(!isDragging)
+                {
+                    if(Math.abs(dy) >= touchSlop || Math.abs(disY) >= touchSlop)
+                    {
+                        isDragging = true;
+                    }
+                }
+                if(isDragging && downInHead)
+                {
+                    int offsetY = computeScrollOffsetY(dy);
+                    if(shouldScrollY(offsetY) && offsetY != 0)
+                    {
+                        scrollBy(0, -offsetY);
+                    }
+                    consumed = true;
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                onMultiPointEvent(tempEvent);
+                log.d("ACTION_POINTER_UP");
+                break;
+            case MotionEvent.ACTION_UP:
+                log.d("ACTION_UP");
+            case MotionEvent.ACTION_CANCEL:
+                log.d("ACTION_CANCEL");
+                float velocityY = getYVelocity();
+                log.d("velocityY = " + velocityY);
+                if(velocityY != 0f)
+                {
+                    startFling(0, (int)velocityY);
+
+                }
+                break;
+            default:
+                break;
+
+
+        }
+        return consumed;
     }
 
 
-
-
-    //    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        boolean intercept = false;
-//        switch (ev.getActionMasked())
-//        {
-//            case MotionEvent.ACTION_DOWN:
-//            {
-//                if(!scroller.isFinished())
-//                {
-//                    scroller.forceFinished(true);
-//                }
-//                mActivePointId = ev.getPointerId(ev.getActionIndex());
-//                newX = downX = oldX = (int)ev.getX();
-//                newY = downY = oldY = (int)ev.getY();
-//                intercept = false;
-//            }
-//            break;
-//            case MotionEvent.ACTION_POINTER_DOWN:
-//            case MotionEvent.ACTION_POINTER_UP:
-//            {
-//                onMultiPointEvent(ev);
-//                intercept = isDragging;
-//            }
-//            break;
-//            case MotionEvent.ACTION_MOVE:
-//            {
-//                oldX = newX;
-//                newY = oldY;
-//                int dy = newY - oldY;
-//
-//            }
-//        }
-//        return intercept;
-//    }
-
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        return super.onTouchEvent(event);
-//    }
 
     private void startScroll(int startX, int startY, int dx, int dy, int duration)
     {
@@ -388,20 +500,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         }else
         {
             int newScrollY = scroller.getCurrY();
-//            if(waitFling)
-//            {
-//                lastScrollY = newScrollY;
-//                invalidate();
-//                return;
-//            }
+
             int dy = newScrollY - lastScrollY;
 //            log.d("computeScroll, dy = " + dy);
             int offset = computeScrollOffsetY(dy);
 //            log.d("computeScroll, offset = " + offset);
             if(offset != 0)
             {
-//                offsetChildrenY(dy);
-
                 scrollBy(0, -offset);
                 lastScrollY = newScrollY;
 
@@ -415,14 +520,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         }
     }
 
-//    private void offsetChildrenY(int dy)
-//    {
-//        for(int i = 0; i < getChildCount(); i++)
-//        {
-//            View view = getChildAt(i);
-//            view.offsetTopAndBottom(dy);
-//        }
-//    }
+
 
     private void createOrUpdateVelocityTracker(MotionEvent event)
     {
@@ -478,18 +576,10 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
 
 
-    private boolean parentConsumeNestedScroll = false;
-    private boolean scrollOrFling = false;
-    private boolean headFirstScroll = true;
-    private boolean reactOnDragHead = false;
 
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean intercepted = false;
 
-        return super.onInterceptTouchEvent(ev);
-    }
+
 
     /*NestedScrollingChild APIs*/
     @Override
@@ -541,7 +631,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     /*NestedScrollingParent APIs*/
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-        log.d("onStartNestedScroll");
+//        log.d("onStartNestedScroll");
         parentConsumeNestedScroll = startNestedScroll(nestedScrollAxes);
         if((ViewCompat.SCROLL_AXIS_VERTICAL & nestedScrollAxes) == ViewCompat.SCROLL_AXIS_VERTICAL)
         {
@@ -554,14 +644,14 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes) {
-        log.d("onNestedScrollAccepted");
+//        log.d("onNestedScrollAccepted");
         mNestedParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
 
     }
 
     @Override
     public void onStopNestedScroll(View target) {
-        log.d("onStopNestedScroll");
+//        log.d("onStopNestedScroll");
         mNestedParentHelper.onStopNestedScroll(target);
 //        waitFling = false;
         if(parentConsumeNestedScroll)
@@ -574,7 +664,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        log.d("onNestedScroll");
+//        log.d("onNestedScroll");
 
         if(shouldScrollY(-dyUnconsumed))
         {
@@ -592,7 +682,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-        log.d("onNestedPreScroll");
+//        log.d("onNestedPreScroll");
         if(parentConsumeNestedScroll)
         {
             int[] parentConsumed = new int[2];
@@ -613,7 +703,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 int scrollOffset = computeScrollOffsetY(-dy);
 //                offsetChildrenY(scrollOffset);
                 scrollBy(0, -scrollOffset);
-                log.d("scrollOffset = " + scrollOffset);
+//                log.d("scrollOffset = " + scrollOffset);
                 consumed[1] = -scrollOffset;
 //                consumed[1] = dy;
             }else
@@ -644,7 +734,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
 
-        log.d("onNestedFling, velocityY = " + (int)velocityY + ", consumed = " + consumed);
+//        log.d("onNestedFling, velocityY = " + (int)velocityY + ", consumed = " + consumed);
         return dispatchNestedFling(velocityX, velocityY, consumed);
 
 //        if(Math.abs(velocityX) > Math.abs(velocityY))
@@ -668,7 +758,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
 
-        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
+//        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
 
 
         if(Math.abs(velocityX) > Math.abs(velocityY))
@@ -683,7 +773,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             {
 //                waitFling = !headFirstScroll;
                 startFling(0, -(int)velocityY);
-                log.d("onNestedPreFling, start fling");
+//                log.d("onNestedPreFling, start fling");
 
 
                 return true;
@@ -737,7 +827,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 delayedTime = 0l;
                 taskEnqueueTime = System.currentTimeMillis();
                 task.notify();
-                log.d("task notified");
+//                log.d("task notified");
             }
         }
 
@@ -745,13 +835,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             synchronized (task)
             {
-                log.d("task locked by " + Thread.currentThread().getName());
+//                log.d("task locked by " + Thread.currentThread().getName());
                 task.clear();
                 task.add(runnable);
                 this.delayedTime = delayedTime;
                 taskEnqueueTime = System.currentTimeMillis();
                 task.notify();
-                log.d("task notified");
+//                log.d("task notified");
             }
 
 
@@ -760,11 +850,11 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         @Override
         public void run(){
             synchronized (task){
-                log.d("task locked by " + Thread.currentThread().getName());
+//                log.d("task locked by " + Thread.currentThread().getName());
                 while(true)
                 {
                     try{
-                        log.d("task wait first");
+//                        log.d("task wait first");
                         if(task.size() == 0)
                         {
                             task.wait();
@@ -779,7 +869,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                             while(true)
                             {
                                 taskSetTime = taskEnqueueTime;
-                                log.d("task wait second");
+//                                log.d("task wait second");
                                 task.wait(delayedTime);
                                 if(taskEnqueueTime == taskSetTime)
                                 {

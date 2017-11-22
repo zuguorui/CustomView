@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public class HideHeadTestActivity extends AppCompatActivity {
 
-    private ImageView imageView;
+
     private ListView listView;
     private LinkedList<HashMap<String, Integer>> data = new LinkedList<>();
     @Override

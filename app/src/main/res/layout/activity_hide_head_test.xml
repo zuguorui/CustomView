@@ -7,42 +7,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zu.customview.HideHeadTestActivity">
-    <ImageView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="#00ff00"
+        android:layout_height="300dp"
+        android:background="#00ff00">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="button"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
-        android:id="@+id/HideHeadActivity_imageView1"/>
-    <com.zu.customview.view.HideHeadLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="#0000ff"
-            android:nestedScrollingEnabled="true"
-            android:id="@+id/HideHeadActivity_imageView2"/>
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            android:id="@+id/HideHeadActivity_listView">
+        android:id="@+id/HideHeadActivity_listView">
 
-        </ListView>
-        <!--<ScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:nestedScrollingEnabled="true">-->
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!--<ImageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:src="@drawable/chuyin"-->
-        <!--android:nestedScrollingEnabled="true"/>-->
-        <!--</LinearLayout>-->
-        <!--</ScrollView>-->
-    </com.zu.customview.view.HideHeadLayout>
+    </ListView>
+
 
 </com.zu.customview.view.HideHeadLayout>
