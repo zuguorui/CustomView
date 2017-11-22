@@ -281,8 +281,9 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-
+//        log.d("before dispatchTouchEvent ev.getY = " + (int)ev.getY() );
         boolean consumed =  super.dispatchTouchEvent(ev);
+//        log.d("after dispatchTouchEvent ev.getY = " + (int)ev.getY() );
         switch (ev.getAction())
         {
             case MotionEvent.ACTION_DOWN:
@@ -291,6 +292,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 stopScroll();
                 Looper.myQueue();
                 isTouching = true;
+
+                if((int)ev.getY() <= headView.getBottom() && (int)ev.getY() >= headView.getTop()
+                        && (int)ev.getX() <= headView.getRight() && (int)ev.getX() >= headView.getLeft())
+                {
+                    downInHead = true;
+                    log.d(" dispatchTouchEvent downInHead = " + downInHead);
+                }
                 break;
 
             case MotionEvent.ACTION_CANCEL:
@@ -323,21 +331,23 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
         boolean intercepted = false;
         MotionEvent tempEvent = MotionEvent.obtain(ev);
-//        tempEvent.offsetLocation(0, getScrollY());
 
+//        log.d("onInterceptTouchEvent ev.getY = " + (int)ev.getY());
         createOrUpdateVelocityTracker(ev);
         switch (tempEvent.getActionMasked())
         {
             case MotionEvent.ACTION_DOWN:
 //                log.d("ACTION_DOWN");
+
                 intercepted = false;
                 newX = downX = (int)tempEvent.getX();
                 newY = downY = (int)tempEvent.getY();
                 mActivePointId = tempEvent.getPointerId(0);
-                if(downY <= headView.getBottom() && downY >= headView.getTop()
-                        && downX <= headView.getRight() && downX >= headView.getLeft())
+                if(downY + getScrollY() <= headView.getBottom() && downY + getScrollY() >= headView.getTop()
+                        && downX + getScrollX() <= headView.getRight() && downX + getScrollX() >= headView.getLeft())
                 {
                     downInHead = true;
+                    log.d("onInterceptTouchEvent downInHead = " + downInHead);
                 }
                 break;
 //            case MotionEvent.ACTION_POINTER_DOWN:
@@ -386,28 +396,25 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     public boolean onTouchEvent(MotionEvent event) {
         boolean consumed = false;
         MotionEvent tempEvent = MotionEvent.obtain(event);
-
+//        tempEvent.offsetLocation(0, getScrollY());
+//        log.d("onTouchEvent ev.getY = " + (int)event.getY());
         createOrUpdateVelocityTracker(event);
         switch (tempEvent.getActionMasked())
         {
 //            case MotionEvent.ACTION_DOWN:
-//                log.d("ACTION_DOWN");
+////                log.d("ACTION_DOWN");
 //                consumed = false;
 //                newX = downX = (int)tempEvent.getX();
 //                newY = downY = (int)tempEvent.getY();
 //                mActivePointId = tempEvent.getPointerId(0);
-//                if(downY <= headView.getBottom() && downY >= headView.getTop()
-//                        && downX <= headView.getRight() && downX >= headView.getLeft())
-//                {
-//                    downInHead = true;
-//                }
+//
 //                break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                log.d("ACTION_POINTER_DOWN");
+//                log.d("ACTION_POINTER_DOWN");
                 onMultiPointEvent(tempEvent);
                 break;
             case MotionEvent.ACTION_MOVE:
-                log.d("ACTION_MOVE");
+//                log.d("ACTION_MOVE");
                 oldX = newX;
                 oldY = newY;
                 newX = (int)tempEvent.getX();
@@ -433,14 +440,14 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 onMultiPointEvent(tempEvent);
-                log.d("ACTION_POINTER_UP");
+//                log.d("ACTION_POINTER_UP");
                 break;
             case MotionEvent.ACTION_UP:
-                log.d("ACTION_UP");
+//                log.d("ACTION_UP");
             case MotionEvent.ACTION_CANCEL:
-                log.d("ACTION_CANCEL");
+//                log.d("ACTION_CANCEL");
                 float velocityY = getYVelocity();
-                log.d("velocityY = " + velocityY);
+//                log.d("velocityY = " + velocityY);
                 if(velocityY != 0f)
                 {
                     startFling(0, (int)velocityY);
@@ -729,6 +736,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         }
 //        log.d("scrollTo, dy = " + realMoveY);
         super.scrollTo(x, realMoveY);
+
     }
 
     @Override
