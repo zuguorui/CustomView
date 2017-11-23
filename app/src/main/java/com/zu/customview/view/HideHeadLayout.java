@@ -433,7 +433,8 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                     int offsetY = computeScrollOffsetY(dy);
                     if(shouldScrollY(offsetY) && offsetY != 0)
                     {
-                        scrollBy(0, -offsetY);
+                        offsetChildrenY(offsetY);
+//                        scrollBy(0, -offsetY);
                     }
                     consumed = true;
                 }
@@ -509,12 +510,13 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             int newScrollY = scroller.getCurrY();
 
             int dy = newScrollY - lastScrollY;
-//            log.d("computeScroll, dy = " + dy);
+            log.d("computeScroll, dy = " + dy);
             int offset = computeScrollOffsetY(dy);
 //            log.d("computeScroll, offset = " + offset);
             if(offset != 0)
             {
-                scrollBy(0, -offset);
+                offsetChildrenY(offset);
+//                scrollBy(0, -offset);
                 lastScrollY = newScrollY;
 
             }else if(!shouldScrollY(dy))
@@ -526,6 +528,18 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
         }
     }
+
+    private void offsetChildrenY(int moveY)
+    {
+        for(int i = 0; i < getChildCount(); i++)
+        {
+            View view = getChildAt(i);
+            view.offsetTopAndBottom(moveY);
+        }
+        notifyHeadHeight();
+
+    }
+
 
 
 
@@ -676,8 +690,8 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         if(shouldScrollY(-dyUnconsumed))
         {
             int scrollOffsetY = computeScrollOffsetY(-dyUnconsumed);
-//            offsetChildrenY(scrollOffsetY);
-            scrollBy(0, -scrollOffsetY);
+            offsetChildrenY(scrollOffsetY);
+//            scrollBy(0, -scrollOffsetY);
             dyConsumed += -scrollOffsetY;
             dyUnconsumed -= -scrollOffsetY;
         }
@@ -699,7 +713,8 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             if(shouldScrollY(-restY))
             {
                 int scrollOffset = computeScrollOffsetY(-restY);
-                scrollBy(0, -scrollOffset);
+                offsetChildrenY(scrollOffset);
+//                scrollBy(0, -scrollOffset);
                 consumed[1] = parentConsumed[1] - scrollOffset;
             }
             consumed[0] = parentConsumed[0];
@@ -708,8 +723,8 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             if(shouldScrollY(-dy) && headFirstScroll)
             {
                 int scrollOffset = computeScrollOffsetY(-dy);
-//                offsetChildrenY(scrollOffset);
-                scrollBy(0, -scrollOffset);
+                offsetChildrenY(scrollOffset);
+//                scrollBy(0, -scrollOffset);
 //                log.d("scrollOffset = " + scrollOffset);
                 consumed[1] = -scrollOffset;
 //                consumed[1] = dy;
@@ -900,5 +915,29 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         }
     }
 
+    private Runnable flingRunnable = new Runnable() {
+        private Scroller mScroller = new Scroller(getContext());
+
+        private void startScroll(int startX, int startY, int dx, int dy, int duration)
+        {
+            mScroller.startScroll(startX, startY, dx, dy, duration);
+            post(this);
+        }
+
+        private void startFling(int startX, int startY, int velocityX, int velocityY)
+        {
+            mScroller.fling(startX, startY, velocityX, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            post(this);
+        }
+
+        @Override
+        public void run() {
+            if(mScroller.computeScrollOffset())
+            {
+                //do your scroll logic
+                post(this);
+            }
+        }
+    };
 
 }
