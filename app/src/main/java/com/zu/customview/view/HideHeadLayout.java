@@ -190,20 +190,16 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private boolean headFirstScroll = true;
     private boolean reactOnDragHead = true;
 
-    private void onMultiPointEvent(MotionEvent event)
+    private void onSecondPointUp(MotionEvent event)
     {
-        if(event.findPointerIndex(mActivePointId) == -1)
+        int pointIndex = event.getActionIndex();
+        int pointId = event.getPointerId(pointIndex);
+        if(pointId == mActivePointId)
         {
-            int newIndex = event.getActionIndex();
-            mActivePointId = event.getPointerId(newIndex);
-            int dy = (int)event.getY(newIndex) - newY;
-            int dx = (int)event.getX(newIndex) - newX;
-            downY += dy;
-            downX += dx;
-
-            newY = oldY = (int)event.getY(newIndex);
-            newX = oldX = (int)event.getX(newIndex);
-
+            int newPointIndex = pointIndex == 0 ? 1 : 0;
+            mActivePointId = event.getPointerId(newPointIndex);
+            newX = oldX = (int)event.getX(newPointIndex);
+            newY = oldY = (int)event.getY(newPointIndex);
         }
     }
 
@@ -328,7 +324,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             return false;
         }
-
+        int pointIndex = -1;
         boolean intercepted = false;
         MotionEvent tempEvent = MotionEvent.obtain(ev);
 
@@ -338,10 +334,15 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             case MotionEvent.ACTION_DOWN:
 //                log.d("ACTION_DOWN");
-
+                mActivePointId = tempEvent.getPointerId(0);
+                pointIndex = tempEvent.findPointerIndex(mActivePointId);
+                if(pointIndex < 0)
+                {
+                    return false;
+                }
                 intercepted = false;
-                newX = downX = (int)tempEvent.getX();
-                newY = downY = (int)tempEvent.getY();
+                newX = downX = (int)tempEvent.getX(pointIndex);
+                newY = downY = (int)tempEvent.getY(pointIndex);
                 mActivePointId = tempEvent.getPointerId(0);
                 if(downY + getScrollY() <= headView.getBottom() && downY + getScrollY() >= headView.getTop()
                         && downX + getScrollX() <= headView.getRight() && downX + getScrollX() >= headView.getLeft())
@@ -356,10 +357,15 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 //                break;
             case MotionEvent.ACTION_MOVE:
 //                log.d("ACTION_MOVE");
+                if(mActivePointId == INVALID_ID)
+                {
+                    return false;
+                }
+                pointIndex = tempEvent.findPointerIndex(mActivePointId);
                 oldX = newX;
                 oldY = newY;
-                newX = (int)tempEvent.getX();
-                newY = (int)tempEvent.getY();
+                newX = (int)tempEvent.getX(pointIndex);
+                newY = (int)tempEvent.getY(pointIndex);
                 int dy = newY - oldY;
                 int disY = newY - downY;
                 if(!isDragging)
@@ -374,10 +380,10 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                     intercepted = true;
                 }
                 break;
-//            case MotionEvent.ACTION_POINTER_UP:
-//                onMultiPointEvent(tempEvent);
-//                log.d("ACTION_POINTER_UP");
-//                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                onSecondPointUp(tempEvent);
+                log.d("ACTION_POINTER_UP");
+                break;
             case MotionEvent.ACTION_UP:
 //                log.d("ACTION_UP");
                 break;
@@ -395,6 +401,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean consumed = false;
+        int pointIndex = -1;
         MotionEvent tempEvent = MotionEvent.obtain(event);
 //        tempEvent.offsetLocation(0, getScrollY());
 //        log.d("onTouchEvent ev.getY = " + (int)event.getY());
@@ -411,14 +418,24 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 //                break;
             case MotionEvent.ACTION_POINTER_DOWN:
 //                log.d("ACTION_POINTER_DOWN");
-                onMultiPointEvent(tempEvent);
+
                 break;
             case MotionEvent.ACTION_MOVE:
+
 //                log.d("ACTION_MOVE");
+                if(mActivePointId == INVALID_ID)
+                {
+                    return false;
+                }
+                pointIndex = tempEvent.findPointerIndex(mActivePointId);
+                if(pointIndex < 0)
+                {
+                    return false;
+                }
                 oldX = newX;
                 oldY = newY;
-                newX = (int)tempEvent.getX();
-                newY = (int)tempEvent.getY();
+                newX = (int)tempEvent.getX(pointIndex);
+                newY = (int)tempEvent.getY(pointIndex);
                 int dy = newY - oldY;
                 int disY = newY - downY;
                 if(!isDragging)
@@ -440,7 +457,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                onMultiPointEvent(tempEvent);
+                onSecondPointUp(tempEvent);
 //                log.d("ACTION_POINTER_UP");
                 break;
             case MotionEvent.ACTION_UP:

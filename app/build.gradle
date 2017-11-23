@@ -3,12 +3,16 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 24
     buildToolsVersion '25.0.0'
+    dataBinding{
+        enabled true
+    }
     defaultConfig {
         applicationId "com.zu.customview"
         minSdkVersion 22
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+
 
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
