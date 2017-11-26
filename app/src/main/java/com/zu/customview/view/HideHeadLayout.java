@@ -187,8 +187,18 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     private boolean isDragging = false;
 
     private boolean parentConsumeNestedScroll = false;
-    private boolean headFirstScroll = true;
+    private boolean headFirstScroll = false;
     private boolean reactOnDragHead = true;
+
+    public void setHeadFirstScroll(boolean shouldHeadFirstScroll)
+    {
+        headFirstScroll = shouldHeadFirstScroll;
+    }
+
+    public boolean isHeadFirstScroll()
+    {
+        return headFirstScroll;
+    }
 
     private void onSecondPointUp(MotionEvent event)
     {
@@ -278,43 +288,41 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
 //        log.d("before dispatchTouchEvent ev.getY = " + (int)ev.getY() );
-        boolean consumed =  super.dispatchTouchEvent(ev);
-//        log.d("after dispatchTouchEvent ev.getY = " + (int)ev.getY() );
-        switch (ev.getAction())
+        MotionEvent tempEvent = MotionEvent.obtain(ev);
+
+        if(ev.getActionMasked() == MotionEvent.ACTION_DOWN)
         {
-            case MotionEvent.ACTION_DOWN:
-//                log.d("ACTION_DOWN");
-                stopAnimatePosition();
-                stopScroll();
-                Looper.myQueue();
-                isTouching = true;
+            //                log.d("ACTION_DOWN");
+            stopAnimatePosition();
+            stopScroll();
+            isTouching = true;
 
-                if((int)ev.getY() <= headView.getBottom() && (int)ev.getY() >= headView.getTop()
-                        && (int)ev.getX() <= headView.getRight() && (int)ev.getX() >= headView.getLeft())
-                {
-                    downInHead = true;
-                    log.d(" dispatchTouchEvent downInHead = " + downInHead);
-                }
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-//                log.d("ACTION_CANCEL");
-            case MotionEvent.ACTION_UP:
-//                log.d("ACTION_UP");
-                isTouching = false;
-                downInHead = false;
-                isDragging = false;
-                recycleVelocityTracker();
-                animateThread.enqueueTaskDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        animatePosition();
-                    }
-                }, 600);
-                break;
-            default:
-                break;
+            if((int)ev.getY() <= headView.getBottom() && (int)ev.getY() >= headView.getTop()
+                    && (int)ev.getX() <= headView.getRight() && (int)ev.getX() >= headView.getLeft())
+            {
+                downInHead = true;
+                log.d(" dispatchTouchEvent downInHead = " + downInHead);
+            }
         }
+
+        boolean consumed =  super.dispatchTouchEvent(tempEvent);
+//        log.d("after dispatchTouchEvent ev.getY = " + (int)ev.getY() );
+
+        if(ev.getActionMasked() == MotionEvent.ACTION_CANCEL || ev.getActionMasked() == MotionEvent.ACTION_UP)
+        {
+            //                log.d("ACTION_UP");
+            isTouching = false;
+            downInHead = false;
+            isDragging = false;
+            recycleVelocityTracker();
+            animateThread.enqueueTaskDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animatePosition();
+                }
+            }, 600);
+        }
+
         return downInHead || consumed;
     }
 
@@ -721,36 +729,46 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
 //        log.d("onNestedPreScroll");
+        int[] parentConsumed = new int[2];
         if(parentConsumeNestedScroll)
         {
-            int[] parentConsumed = new int[2];
+
             dispatchNestedPreScroll(dx, dy, parentConsumed, null);
-            int restY = dy - parentConsumed[1];
-            int restX = dx - parentConsumed[0];
-            if(shouldScrollY(-restY))
-            {
-                int scrollOffset = computeScrollOffsetY(-restY);
-                offsetChildrenY(scrollOffset);
-//                scrollBy(0, -scrollOffset);
-                consumed[1] = parentConsumed[1] - scrollOffset;
-            }
-            consumed[0] = parentConsumed[0];
-        }else
-        {
-            if(shouldScrollY(-dy) && headFirstScroll)
-            {
-                int scrollOffset = computeScrollOffsetY(-dy);
-                offsetChildrenY(scrollOffset);
-//                scrollBy(0, -scrollOffset);
-//                log.d("scrollOffset = " + scrollOffset);
-                consumed[1] = -scrollOffset;
-//                consumed[1] = dy;
-            }else
-            {
-                consumed[1] = 0;
-            }
-            consumed[0] = 0;
+
         }
+        if(-dy > 0 && !headFirstScroll)
+        {
+            consumed[0] = parentConsumed[0];
+            consumed[1] = parentConsumed[1];
+            return;
+        }
+        int restY = dy - parentConsumed[1];
+        int restX = dx - parentConsumed[0];
+        if(shouldScrollY(-restY))
+        {
+            int scrollOffset = computeScrollOffsetY(-restY);
+            offsetChildrenY(scrollOffset);
+//                scrollBy(0, -scrollOffset);
+            consumed[1] = parentConsumed[1]  + (- scrollOffset);
+        }
+        consumed[0] = parentConsumed[0];
+
+
+//        {
+//            if(shouldScrollY(-dy) && headFirstScroll)
+//            {
+//                int scrollOffset = computeScrollOffsetY(-dy);
+//                offsetChildrenY(scrollOffset);
+////                scrollBy(0, -scrollOffset);
+////                log.d("scrollOffset = " + scrollOffset);
+//                consumed[1] = -scrollOffset;
+////                consumed[1] = dy;
+//            }else
+//            {
+//                consumed[1] = 0;
+//            }
+//            consumed[0] = 0;
+//        }
 
     }
 
@@ -798,7 +816,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
 
-//        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
+        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
 
 
         if(Math.abs(velocityX) > Math.abs(velocityY))
@@ -809,6 +827,10 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             return true;
         }else
         {
+            if(!headFirstScroll && -velocityY > 0 && headView.getBottom() <= getVisibleRect().top)
+            {
+                return false;
+            }
             if(((-velocityY > 0 && shouldScrollY(1)) || (-velocityY < 0 && shouldScrollY(-1))))
             {
 //                waitFling = !headFirstScroll;
@@ -932,29 +954,5 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         }
     }
 
-    private Runnable flingRunnable = new Runnable() {
-        private Scroller mScroller = new Scroller(getContext());
-
-        private void startScroll(int startX, int startY, int dx, int dy, int duration)
-        {
-            mScroller.startScroll(startX, startY, dx, dy, duration);
-            post(this);
-        }
-
-        private void startFling(int startX, int startY, int velocityX, int velocityY)
-        {
-            mScroller.fling(startX, startY, velocityX, velocityY, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            post(this);
-        }
-
-        @Override
-        public void run() {
-            if(mScroller.computeScrollOffset())
-            {
-                //do your scroll logic
-                post(this);
-            }
-        }
-    };
 
 }
