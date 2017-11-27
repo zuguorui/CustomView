@@ -301,7 +301,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                     && (int)ev.getX() <= headView.getRight() && (int)ev.getX() >= headView.getLeft())
             {
                 downInHead = true;
-                log.d(" dispatchTouchEvent downInHead = " + downInHead);
+//                log.d(" dispatchTouchEvent downInHead = " + downInHead);
             }
         }
 
@@ -390,7 +390,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 onSecondPointUp(tempEvent);
-                log.d("ACTION_POINTER_UP");
+//                log.d("ACTION_POINTER_UP");
                 break;
             case MotionEvent.ACTION_UP:
 //                log.d("ACTION_UP");
@@ -535,7 +535,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
             int newScrollY = scroller.getCurrY();
 
             int dy = newScrollY - lastScrollY;
-            log.d("computeScroll, dy = " + dy);
+//            log.d("computeScroll, dy = " + dy);
             int offset = computeScrollOffsetY(dy);
 //            log.d("computeScroll, offset = " + offset);
             if(offset != 0)
@@ -677,7 +677,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     /*NestedScrollingParent APIs*/
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-//        log.d("onStartNestedScroll");
+        log.d("onStartNestedScroll");
         parentConsumeNestedScroll = startNestedScroll(nestedScrollAxes);
         if((ViewCompat.SCROLL_AXIS_VERTICAL & nestedScrollAxes) == ViewCompat.SCROLL_AXIS_VERTICAL)
         {
@@ -690,14 +690,14 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedScrollAccepted(View child, View target, int nestedScrollAxes) {
-//        log.d("onNestedScrollAccepted");
+        log.d("onNestedScrollAccepted");
         mNestedParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes);
 
     }
 
     @Override
     public void onStopNestedScroll(View target) {
-//        log.d("onStopNestedScroll");
+        log.d("onStopNestedScroll");
         mNestedParentHelper.onStopNestedScroll(target);
 //        waitFling = false;
         if(parentConsumeNestedScroll)
@@ -816,7 +816,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
 
-        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
+//        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
 
 
         if(Math.abs(velocityX) > Math.abs(velocityY))

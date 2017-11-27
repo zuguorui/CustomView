@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zu.customview.view.DragToLoadLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zu.customview.DragToLoadActivity">
+    <com.zu.customview.view.UpDragLoadView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/DragToLoad_upDragLoadView">
+
+    </com.zu.customview.view.UpDragLoadView>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/DragToLoad_listView"></ListView>
+    <com.zu.customview.view.DownDragLoadView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/DragToLoad_downDragLoadView">
+
+    </com.zu.customview.view.DownDragLoadView>
+</com.zu.customview.view.DragToLoadLayout>

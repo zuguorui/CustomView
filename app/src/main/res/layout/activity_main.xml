@@ -95,6 +95,11 @@
                 android:layout_height="wrap_content"
                 android:text="HideHead Test"
                 android:id="@+id/hide_head"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DragToLoad"
+                android:id="@+id/drag_to_load_activity"/>
         </LinearLayout>
     </ScrollView>
 

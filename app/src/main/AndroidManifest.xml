@@ -75,7 +75,8 @@
         <service android:name=".swiftp.WifiStateChangeReceiver$StartServerService" />
         <service android:name=".swiftp.WifiStateChangeReceiver$StopServerService" />
 
-        <activity android:name=".HideHeadTestActivity"></activity>
+        <activity android:name=".HideHeadTestActivity" />
+        <activity android:name=".DragToLoadActivity"></activity>
     </application>
 
 </manifest>

@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button galleryTestButton;
     private Button ftpTestButton;
     private Button hideHeadTestButton;
+    private Button dragToLoadButton;
 
     private Observer observer = new Observer() {
         @Override
@@ -132,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         hideHeadTestButton = (Button)findViewById(R.id.hide_head);
         hideHeadTestButton.setOnClickListener(this);
 
+        dragToLoadButton = (Button)findViewById(R.id.drag_to_load_activity);
+        dragToLoadButton.setOnClickListener(this);
+
     }
 
 
@@ -202,6 +206,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.hide_head:
                 Intent intent15 = new Intent(this, HideHeadTestActivity.class);
                 startActivity(intent15);
+                break;
+            case R.id.drag_to_load_activity:
+                Intent intent16 = new Intent(this, DragToLoadActivity.class);
+                startActivity(intent16);
                 break;
             default:
                 break;
