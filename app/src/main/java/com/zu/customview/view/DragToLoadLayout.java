@@ -165,7 +165,7 @@ public class DragToLoadLayout extends FrameLayout{
         int childWidthSpec = getChildMeasureSpec(widthMeasureSpec, 0, upDragLoadView.getLayoutParams().width);
         upDragLoadView.measure(childWidthSpec, childHeightSpec);
 
-        childHeightSpec = MeasureSpec.makeMeasureSpec(selfHeight, MeasureSpec.EXACTLY);
+        childHeightSpec = MeasureSpec.makeMeasureSpec(selfHeight, MeasureSpec.AT_MOST);
         childWidthSpec = MeasureSpec.makeMeasureSpec(selfWidth, MeasureSpec.EXACTLY);
         contentView.measure(childWidthSpec, childHeightSpec);
 
@@ -205,17 +205,20 @@ public class DragToLoadLayout extends FrameLayout{
             checkViews();
 
             Rect rect = getVisibleRect();
-            int top = rect.top - getChildAt(0).getMeasuredHeight();
-
-
-            int left = rect.left;
-            int right = rect.right;
-            for(int i = 0; i < getChildCount(); i++)
-            {
-                View view = getChildAt(i);
-                view.layout(left, top, right, top + view.getMeasuredHeight());
-                top += view.getMeasuredHeight();
-            }
+            upDragLoadView.layout(rect.left, rect.top - upDragLoadView.getMeasuredHeight(), rect.right, rect.top);
+            contentView.layout(rect.left, rect.top, rect.right, rect.top + contentView.getMeasuredHeight());
+            downDragLoadView.layout(rect.left, rect.bottom, rect.right, rect.bottom + downDragLoadView.getMeasuredHeight());
+//            int top = rect.top - getChildAt(0).getMeasuredHeight();
+//
+//
+//            int left = rect.left;
+//            int right = rect.right;
+//            for(int i = 0; i < getChildCount(); i++)
+//            {
+//                View view = getChildAt(i);
+//                view.layout(left, top, right, top + view.getMeasuredHeight());
+//                top += view.getMeasuredHeight();
+//            }
             layouted = true;
         }
 
@@ -232,7 +235,8 @@ public class DragToLoadLayout extends FrameLayout{
     private int lastScrollY = 0;
     private boolean downInLoadView = false;
     private boolean parentConsumeNestedScroll = false;
-
+    private boolean dispatchTouchEventFail = false;
+    private boolean downInSpace = false;
     private boolean isDragging = false;
 
 
@@ -250,14 +254,21 @@ public class DragToLoadLayout extends FrameLayout{
             isTouching = true;
         }
         boolean consumed = super.dispatchTouchEvent(tempEven);
-
+        if(!consumed)
+        {
+            dispatchTouchEventFail = true;
+        }
         if(ev.getActionMasked() == MotionEvent.ACTION_CANCEL || ev.getActionMasked() == MotionEvent.ACTION_UP)
         {
             //                log.d("ACTION_UP");
+
+            recycleVelocityTracker();
             isTouching = false;
             downInLoadView = false;
             isDragging = false;
-            recycleVelocityTracker();
+
+            dispatchTouchEventFail = false;
+            downInSpace = false;
 //            animateThread.enqueueTaskDelayed(new Runnable() {
 //                @Override
 //                public void run() {
@@ -268,7 +279,7 @@ public class DragToLoadLayout extends FrameLayout{
             notifyDragStat(true);
         }
 
-        return downInLoadView || consumed;
+        return downInLoadView || consumed || dispatchTouchEventFail || downInSpace;
 
     }
 
@@ -299,6 +310,8 @@ public class DragToLoadLayout extends FrameLayout{
                         && downX + getScrollX() <= upDragLoadView.getRight() && downX + getScrollX() >= upDragLoadView.getLeft());
                 boolean downInFoot = (downY + getScrollY() <= downDragLoadView.getBottom() && downY + getScrollY() >= downDragLoadView.getTop()
                         && downX + getScrollX() <= downDragLoadView.getRight() && downX + getScrollX() >= downDragLoadView.getLeft());
+                downInSpace = !(downY + getScrollY() <= contentView.getBottom() && downY + getScrollY() >= contentView.getTop()
+                        && downX + getScrollX() <= contentView.getRight() && downX + getScrollX() >= contentView.getLeft());
                 if(downInHead || downInFoot)
                 {
                     downInLoadView = true;
@@ -349,7 +362,7 @@ public class DragToLoadLayout extends FrameLayout{
 
 
         }
-        return intercepted;
+        return intercepted || dispatchTouchEventFail;
     }
 
     @Override
@@ -400,7 +413,7 @@ public class DragToLoadLayout extends FrameLayout{
                         isDragging = true;
                     }
                 }
-                if(isDragging && downInLoadView)
+                if(isDragging && (downInLoadView || downInSpace))
                 {
                     if(shouldScrollY(dy) && dy != 0)
                     {

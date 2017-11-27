@@ -186,9 +186,12 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     private boolean isDragging = false;
 
+
+
     private boolean parentConsumeNestedScroll = false;
     private boolean headFirstScroll = false;
     private boolean reactOnDragHead = true;
+
 
     public void setHeadFirstScroll(boolean shouldHeadFirstScroll)
     {
