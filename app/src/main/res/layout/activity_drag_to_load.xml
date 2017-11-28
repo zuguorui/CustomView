@@ -8,7 +8,7 @@
     tools:context="com.zu.customview.DragToLoadActivity">
     <com.zu.customview.view.UpDragLoadView
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="100dp"
         android:id="@+id/DragToLoad_upDragLoadView">
 
     </com.zu.customview.view.UpDragLoadView>
@@ -19,7 +19,7 @@
         android:id="@+id/DragToLoad_listView"></ListView>
     <com.zu.customview.view.DownDragLoadView
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="100dp"
         android:id="@+id/DragToLoad_downDragLoadView">
 
     </com.zu.customview.view.DownDragLoadView>

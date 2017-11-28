@@ -50,26 +50,26 @@ public class UpDragLoadView extends DragLoadView {
     }
 
     @Override
-    public void onDrag(float process) {
+    public void drag(float process) {
         imageView.setRotation(process * 360);
         log.d("onDrag, process = " + process);
-        super.onDrag(process);
+        super.drag(process);
     }
 
     @Override
-    public void onDragRelease(float process) {
-        super.onDragRelease(process);
+    public void dragRelease(float process) {
+        super.dragRelease(process);
     }
 
     @Override
-    public void onDragStart() {
-        super.onDragStart();
+    public void dragStart() {
+        super.dragStart();
     }
 
 
     @Override
-    public void onLoadComplete(boolean success) {
-        super.onLoadComplete(success);
+    public void loadComplete(boolean success) {
+        super.loadComplete(success);
         animator.resume();
         if(success)
         {
@@ -81,9 +81,9 @@ public class UpDragLoadView extends DragLoadView {
     }
 
     @Override
-    public void onLoadStart() {
+    public void loadStart() {
 
-        super.onLoadStart();
+        super.loadStart();
         if(animator == null)
         {
             animator = ValueAnimator.ofFloat(0f, 360f);

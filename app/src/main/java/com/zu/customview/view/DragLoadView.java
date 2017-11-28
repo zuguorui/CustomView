@@ -52,14 +52,14 @@ public abstract class DragLoadView extends FrameLayout {
         this.onDragListener = null;
     }
 
-    public void onDrag(float process){
+    public void drag(float process){
         if(onDragListener != null)
         {
             onDragListener.onDrag(process);
         }
     }
 
-    public void onDragRelease(float process)
+    public void dragRelease(float process)
     {
         if(onDragListener != null)
         {
@@ -67,7 +67,7 @@ public abstract class DragLoadView extends FrameLayout {
         }
     }
 
-    public void onDragStart()
+    public void dragStart()
     {
         if(onDragListener != null)
         {
@@ -75,7 +75,7 @@ public abstract class DragLoadView extends FrameLayout {
         }
     }
 
-    public void onLoadComplete(boolean success)
+    public void loadComplete(boolean success)
     {
         if(onLoadListener != null)
         {
@@ -83,7 +83,7 @@ public abstract class DragLoadView extends FrameLayout {
         }
     }
 
-    public void onLoadStart()
+    public void loadStart()
     {
         if(onLoadListener != null)
         {
@@ -91,7 +91,7 @@ public abstract class DragLoadView extends FrameLayout {
         }
     }
 
-    public void onLoadCancel()
+    public void loadCancel()
     {
         if(onLoadListener != null)
         {

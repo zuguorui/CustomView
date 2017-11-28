@@ -11,6 +11,7 @@ import android.support.annotation.StyleRes;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -39,37 +40,73 @@ public class DragToLoadLayout extends FrameLayout{
 
     private boolean layouted = false;
 
-    private DragLoadView.OnLoadListener upOnLoadListsner = new DragLoadView.OnLoadListener() {
+    private DragLoadView.OnLoadListener upOnLoadListener = new DragLoadView.OnLoadListener() {
         @Override
         public void onLoadComplete(boolean success) {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.top - upDragLoadView.getBottom();
+            if(offset < 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
 
         @Override
         public void onLoadStart() {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.top - upDragLoadView.getTop();
+            if(offset > 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
 
         @Override
         public void onLoadCancel() {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.top - upDragLoadView.getBottom();
+            if(offset < 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
     };
 
     private DragLoadView.OnLoadListener downOnLoadListener = new DragLoadView.OnLoadListener() {
         @Override
         public void onLoadComplete(boolean success) {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.bottom - downDragLoadView.getTop();
+            if(offset > 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
 
         @Override
         public void onLoadStart() {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.bottom - downDragLoadView.getBottom();
+            if(offset < 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
 
         @Override
         public void onLoadCancel() {
-
+            stopScroll();
+            Rect visibleRect = getVisibleRect();
+            int offset = visibleRect.bottom - upDragLoadView.getTop();
+            if(offset > 0)
+            {
+                startScroll(0, 0, 0, offset, 600);
+            }
         }
     };
 
@@ -120,10 +157,10 @@ public class DragToLoadLayout extends FrameLayout{
             float process = offset * 1.0f / height;
             if(release)
             {
-                upDragLoadView.onDragRelease(process);
+                upDragLoadView.dragRelease(process);
             }else
             {
-                upDragLoadView.onDrag(process);
+                upDragLoadView.drag(process);
             }
 
         }else if(downDragLoadView.getTop() < visibleRect.bottom)
@@ -133,10 +170,10 @@ public class DragToLoadLayout extends FrameLayout{
             float process = offset * 1.0f / height;
             if(release)
             {
-                downDragLoadView.onDragRelease(process);
+                downDragLoadView.dragRelease(process);
             }else
             {
-                downDragLoadView.onDrag(process);
+                downDragLoadView.drag(process);
             }
 
         }
@@ -157,7 +194,7 @@ public class DragToLoadLayout extends FrameLayout{
         contentView = getChildAt(1);
         downDragLoadView = (DragLoadView)getChildAt(2);
 
-        upDragLoadView.setOnLoadListener(upOnLoadListsner);
+        upDragLoadView.setOnLoadListener(upOnLoadListener);
         downDragLoadView.setOnLoadListener(downOnLoadListener);
 
 
@@ -417,7 +454,7 @@ public class DragToLoadLayout extends FrameLayout{
                 {
                     if(shouldScrollY(dy) && dy != 0)
                     {
-                        computeAndScrollY(dy);
+                        computeAndScrollY(dy, true);
 //                        scrollBy(0, -offsetY);
                     }
                     consumed = true;
@@ -445,6 +482,36 @@ public class DragToLoadLayout extends FrameLayout{
 
         }
         return consumed;
+    }
+
+    @Override
+    public void computeScroll() {
+        if(scroller == null)
+        {
+            return;
+        }else if(!scroller.computeScrollOffset())
+        {
+
+            return;
+        }else
+        {
+            int newScrollY = scroller.getCurrY();
+
+            int dy = newScrollY - lastScrollY;
+            lastScrollY = newScrollY;
+//            log.d("computeScroll, dy = " + dy);
+            if(shouldScrollY(dy))
+            {
+                int offset = computeAndScrollY(dy, isTouching);
+            }else
+            {
+                stopScroll();
+                return;
+            }
+
+            invalidate();
+
+        }
     }
 
     private boolean shouldScrollY(int dy)
@@ -532,12 +599,14 @@ public class DragToLoadLayout extends FrameLayout{
 
     /**
      * compute the offset and scroll children. Attention that the consumed offset may not equals the real offset of children's scrolling.
-     * @param dy: the offset of scroll
+     * @param dy the offset of scroll.
+     * @param hasResistance whether compute resistance. if true, means we reduce dy depends on how much the length views offset.
+     *                      if false, we will offset views definitely by dy expect reaching edge.
      * @return consumed offset of dy, will not bigger than dy.
      *
      *
      * */
-    private int computeAndScrollY(int dy)
+    private int computeAndScrollY(int dy, boolean hasResistance)
     {
         Rect visibleRect = getVisibleRect();
         int offset = 0;
@@ -552,7 +621,7 @@ public class DragToLoadLayout extends FrameLayout{
                 return 0;
             }
             int dis = Math.abs(downDragLoadView.getBottom() - visibleRect.bottom);
-            float process = dis * 1.0f / downDragLoadView.getHeight() + 0.1f;
+            float process = hasResistance ? dis * 1.0f / downDragLoadView.getHeight() + 0.1f : 1.0f;
             if(process > 1.0f)
             {
                 process = 1.0f;
@@ -574,7 +643,7 @@ public class DragToLoadLayout extends FrameLayout{
                 return 0;
             }
             int dis = Math.abs(upDragLoadView.getTop() - visibleRect.top);
-            float process = dis * 1.0f / upDragLoadView.getHeight() + 0.1f;
+            float process = hasResistance ? dis * 1.0f / upDragLoadView.getHeight() + 0.1f : 1.0f;
             if(process > 1.0f)
             {
                 process = 1.0f;
@@ -592,7 +661,7 @@ public class DragToLoadLayout extends FrameLayout{
             }
         }
         offsetChildrenY(offset);
-        notifyDragStat(isTouching);
+        notifyDragStat(!isTouching);
         return consumed;
     }
 
@@ -711,7 +780,7 @@ public class DragToLoadLayout extends FrameLayout{
 
         if(shouldScrollY(-dyUnconsumed))
         {
-            int consumed = computeAndScrollY(-dyUnconsumed);
+            int consumed = computeAndScrollY(-dyUnconsumed, true);
 
 //            scrollBy(0, -scrollOffsetY);
             dyConsumed += -consumed;
@@ -741,7 +810,7 @@ public class DragToLoadLayout extends FrameLayout{
             int restX = dx - parentConsumed[0];
             if(shouldScrollY(-restY))
             {
-                int consumedOffset = computeAndScrollY(-restY);
+                int consumedOffset = computeAndScrollY(-restY, true);
 
 //                scrollBy(0, -scrollOffset);
                 consumed[1] = parentConsumed[1]  + (- consumedOffset);

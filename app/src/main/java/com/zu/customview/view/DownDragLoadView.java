@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.zu.customview.MyLog;
 import com.zu.customview.R;
 
 
@@ -22,6 +23,8 @@ public class DownDragLoadView extends DragLoadView {
     private ImageView imageView;
     private TextView textView;
     private ValueAnimator animator = null;
+
+    private MyLog log = new MyLog("DownDragLoadView", true);
     public DownDragLoadView(@NonNull Context context) {
         this(context, null);
 
@@ -48,25 +51,26 @@ public class DownDragLoadView extends DragLoadView {
     }
 
     @Override
-    public void onDrag(float process) {
+    public void drag(float process) {
+        log.d("onDrag, process = " + process);
         imageView.setRotation(process * 360);
-        super.onDrag(process);
+        super.drag(process);
     }
 
     @Override
-    public void onDragRelease(float process) {
-        super.onDragRelease(process);
+    public void dragRelease(float process) {
+        super.dragRelease(process);
     }
 
     @Override
-    public void onDragStart() {
-        super.onDragStart();
+    public void dragStart() {
+        super.dragStart();
     }
 
 
     @Override
-    public void onLoadComplete(boolean success) {
-        super.onLoadComplete(success);
+    public void loadComplete(boolean success) {
+        super.loadComplete(success);
         animator.resume();
         if(success)
         {
@@ -78,9 +82,9 @@ public class DownDragLoadView extends DragLoadView {
     }
 
     @Override
-    public void onLoadStart() {
+    public void loadStart() {
 
-        super.onLoadStart();
+        super.loadStart();
         if(animator == null)
         {
             animator = ValueAnimator.ofFloat(0f, 360f);
