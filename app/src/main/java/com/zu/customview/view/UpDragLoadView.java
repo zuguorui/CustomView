@@ -70,7 +70,7 @@ public class UpDragLoadView extends DragLoadView {
     @Override
     public void loadComplete(boolean success) {
         super.loadComplete(success);
-        animator.resume();
+        animator.end();
         if(success)
         {
             textView.setText("刷新成功");
@@ -103,5 +103,15 @@ public class UpDragLoadView extends DragLoadView {
         textView.setText("正在刷新");
 
 
+    }
+
+    @Override
+    public void viewHidden() {
+        if(animator != null)
+        {
+            animator.end();
+        }
+
+        textView.setText("下拉刷新");
     }
 }

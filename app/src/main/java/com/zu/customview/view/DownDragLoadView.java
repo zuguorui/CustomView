@@ -71,7 +71,7 @@ public class DownDragLoadView extends DragLoadView {
     @Override
     public void loadComplete(boolean success) {
         super.loadComplete(success);
-        animator.resume();
+        animator.end();
         if(success)
         {
             textView.setText("加载完成");
@@ -102,7 +102,14 @@ public class DownDragLoadView extends DragLoadView {
         }
         animator.start();
         textView.setText("正在加载");
+    }
 
-
+    @Override
+    public void viewHidden() {
+        if(animator != null)
+        {
+            animator.end();
+        }
+        textView.setText("上拉加载更多");
     }
 }

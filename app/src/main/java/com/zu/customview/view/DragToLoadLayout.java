@@ -102,7 +102,7 @@ public class DragToLoadLayout extends FrameLayout{
         public void onLoadCancel() {
             stopScroll();
             Rect visibleRect = getVisibleRect();
-            int offset = visibleRect.bottom - upDragLoadView.getTop();
+            int offset = visibleRect.bottom - downDragLoadView.getTop();
             if(offset > 0)
             {
                 startScroll(0, 0, 0, offset, 600);
@@ -661,7 +661,19 @@ public class DragToLoadLayout extends FrameLayout{
             }
         }
         offsetChildrenY(offset);
-        notifyDragStat(!isTouching);
+        if(upDragLoadView.getBottom() - offset > visibleRect.top && upDragLoadView.getBottom() <= visibleRect.top)
+        {
+            upDragLoadView.viewHidden();
+        }
+        if(downDragLoadView.getTop() - offset < visibleRect.bottom && downDragLoadView.getTop() >= visibleRect.bottom)
+        {
+            downDragLoadView.viewHidden();
+        }
+        if(isTouching)
+        {
+            notifyDragStat(false);
+        }
+
         return consumed;
     }
 

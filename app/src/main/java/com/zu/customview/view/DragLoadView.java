@@ -15,6 +15,7 @@ public abstract class DragLoadView extends FrameLayout {
     private OnLoadListener onLoadListener = null;
     private OnDragListener onDragListener = null;
 
+
     public DragLoadView(@NonNull Context context) {
         this(context, null);
 
@@ -98,6 +99,8 @@ public abstract class DragLoadView extends FrameLayout {
             onLoadListener.onLoadCancel();
         }
     }
+
+    public abstract void viewHidden();
 
 
 

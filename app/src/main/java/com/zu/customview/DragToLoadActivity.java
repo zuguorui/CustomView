@@ -22,6 +22,7 @@ public class DragToLoadActivity extends AppCompatActivity {
 
     private boolean isRefreshing = false;
     private boolean isLoading = false;
+    private float startLoadGate = 0.7f;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -38,7 +39,7 @@ public class DragToLoadActivity extends AppCompatActivity {
 
         @Override
         public void onDragRelease(float process) {
-            if(process > 0.5f && !isRefreshing)
+            if(process > startLoadGate && !isRefreshing)
             {
                 isRefreshing = true;
                 upDragLoadView.loadStart();
@@ -50,7 +51,12 @@ public class DragToLoadActivity extends AppCompatActivity {
                         upDragLoadView.loadComplete(true);
                         isRefreshing = false;
                     }
-                }, 1000);
+                }, 3000);
+                return;
+            }
+            if(process <= startLoadGate)
+            {
+                upDragLoadView.loadCancel();
             }
         }
 
@@ -68,7 +74,7 @@ public class DragToLoadActivity extends AppCompatActivity {
 
         @Override
         public void onDragRelease(float process) {
-            if(process > 0.5f && !isLoading)
+            if(process > startLoadGate && !isLoading)
             {
                 isLoading = true;
                 downDragLoadView.loadStart();
@@ -79,7 +85,12 @@ public class DragToLoadActivity extends AppCompatActivity {
                         downDragLoadView.loadComplete(true);
                         isLoading = false;
                     }
-                }, 1000);
+                }, 3000);
+                return;
+            }
+            if(process <= startLoadGate)
+            {
+                downDragLoadView.loadCancel();
             }
         }
 
@@ -93,7 +104,7 @@ public class DragToLoadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drag_to_load);
-        createData(5);
+        createData(50);
         initViews();
 
     }
