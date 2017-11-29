@@ -713,7 +713,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-//        log.d("onNestedScroll");
+        log.d("onNestedScroll");
 
         if(shouldScrollY(-dyUnconsumed))
         {
@@ -731,7 +731,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-//        log.d("onNestedPreScroll");
+        log.d("onNestedPreScroll");
         int[] parentConsumed = new int[2];
         if(parentConsumeNestedScroll)
         {
