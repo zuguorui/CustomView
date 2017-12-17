@@ -1,10 +1,14 @@
 package com.zu.customview;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.zu.customview.view.DragLoadView;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +18,13 @@ public class HideHeadTestActivity extends AppCompatActivity {
 
     private ListView listView;
     private LinkedList<HashMap<String, Integer>> data = new LinkedList<>();
+
+    private DragLoadView upDragLoadView;
+    private DragLoadView downDragLoadView;
+    private boolean isRefreshing = false;
+    private boolean isLoading = false;
+    private float startLoadGate = 0.7f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +36,12 @@ public class HideHeadTestActivity extends AppCompatActivity {
     private void initViews()
     {
 
+        upDragLoadView = (DragLoadView)findViewById(R.id.DragToLoad_upDragLoadView);
+        downDragLoadView = (DragLoadView)findViewById(R.id.DragToLoad_downDragLoadView);
+
+
+        upDragLoadView.setOnDragListener(upListener);
+        downDragLoadView.setOnDragListener(downListsner);
         listView = (ListView)findViewById(R.id.HideHeadActivity_listView);
         listView.setNestedScrollingEnabled(true);
         SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.list_item, new String[]{"name"}, new int[]{R.id.ListItem_index});
@@ -41,4 +58,80 @@ public class HideHeadTestActivity extends AppCompatActivity {
             data.push(s);
         }
     }
+
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            return false;
+        }
+    });
+
+    private DragLoadView.OnDragListener upListener = new DragLoadView.OnDragListener() {
+        @Override
+        public void onDrag(float process) {
+
+        }
+
+        @Override
+        public void onDragRelease(float process) {
+            if(process > startLoadGate && !isRefreshing)
+            {
+                isRefreshing = true;
+                upDragLoadView.loadStart();
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        upDragLoadView.loadComplete(true);
+                        isRefreshing = false;
+                    }
+                }, 3000);
+                return;
+            }
+            if(process <= startLoadGate)
+            {
+                upDragLoadView.loadCancel();
+            }
+        }
+
+        @Override
+        public void onDragStart() {
+
+        }
+    };
+
+    private DragLoadView.OnDragListener downListsner = new DragLoadView.OnDragListener() {
+        @Override
+        public void onDrag(float process) {
+
+        }
+
+        @Override
+        public void onDragRelease(float process) {
+            if(process > startLoadGate && !isLoading)
+            {
+                isLoading = true;
+                downDragLoadView.loadStart();
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        downDragLoadView.loadComplete(true);
+                        isLoading = false;
+                    }
+                }, 3000);
+                return;
+            }
+            if(process <= startLoadGate)
+            {
+                downDragLoadView.loadCancel();
+            }
+        }
+
+        @Override
+        public void onDragStart() {
+
+        }
+    };
 }

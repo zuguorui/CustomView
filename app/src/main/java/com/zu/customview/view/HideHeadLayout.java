@@ -381,7 +381,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
                 int disY = newY - downY;
                 if(!isDragging)
                 {
-                    if(dy >= touchSlop || disY >= touchSlop)
+                    if(Math.abs(dy) >= touchSlop || Math.abs(disY) >= touchSlop)
                     {
                         isDragging = true;
                     }

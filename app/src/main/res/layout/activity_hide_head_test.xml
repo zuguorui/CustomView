@@ -9,7 +9,7 @@
     tools:context="com.zu.customview.HideHeadTestActivity">
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="200dp"
         android:background="#00ff00">
         <Button
             android:layout_width="wrap_content"
@@ -17,13 +17,28 @@
             android:text="button"
             android:layout_gravity="center"/>
     </FrameLayout>
-    <ListView
+    <com.zu.customview.view.DragToLoadLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:nestedScrollingEnabled="true"
-        android:id="@+id/HideHeadActivity_listView">
+        android:layout_height="match_parent">
+        <com.zu.customview.view.UpDragLoadView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/DragToLoad_upDragLoadView">
 
-    </ListView>
+        </com.zu.customview.view.UpDragLoadView>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nestedScrollingEnabled="true"
+            android:id="@+id/HideHeadActivity_listView">
+        </ListView>
+        <com.zu.customview.view.DownDragLoadView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/DragToLoad_downDragLoadView">
+
+        </com.zu.customview.view.DownDragLoadView>
+    </com.zu.customview.view.DragToLoadLayout>
 
 
 </com.zu.customview.view.HideHeadLayout>
