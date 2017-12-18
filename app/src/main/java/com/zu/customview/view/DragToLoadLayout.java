@@ -806,7 +806,7 @@ public class DragToLoadLayout extends FrameLayout{
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-        log.d("onNestedPreScroll, dy = " + dy);
+//        log.d("onNestedPreScroll, dy = " + dy);
         Rect visibleRect = getVisibleRect();
         int[] parentConsumed = new int[2];
         if(parentConsumeNestedScroll)
@@ -815,19 +815,20 @@ public class DragToLoadLayout extends FrameLayout{
             dispatchNestedPreScroll(dx, dy, parentConsumed, null);
 
         }
-        if((-dy < 0 && upDragLoadView.getBottom() > visibleRect.top)
-                || (-dy > 0 && downDragLoadView.getTop() < visibleRect.bottom))
+        int restY = dy - parentConsumed[1];
+        int restX = dx - parentConsumed[0];
+        consumed[0] = parentConsumed[0];
+        consumed[1] = parentConsumed[1];
+        if((-restY < 0 && upDragLoadView.getBottom() > visibleRect.top)
+                || (-restY > 0 && downDragLoadView.getTop() < visibleRect.bottom))
         {
-            int restY = dy - parentConsumed[1];
-            int restX = dx - parentConsumed[0];
+
             if(shouldScrollY(-restY))
             {
                 int consumedOffset = computeAndScrollY(-restY, true);
-
-//                scrollBy(0, -scrollOffset);
-                consumed[1] = parentConsumed[1]  + (- consumedOffset);
+                consumed[1] = consumed[1]  + (- consumedOffset);
             }
-            consumed[0] = parentConsumed[0];
+
         }
 
 
@@ -864,7 +865,7 @@ public class DragToLoadLayout extends FrameLayout{
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
 
 //        log.d("onNestedPreFling, velocityY = " + (int)velocityY);
-            return false;
+            return dispatchNestedPreFling(velocityX, velocityY);
 
 //        if(Math.abs(velocityX) > Math.abs(velocityY))
 //        {

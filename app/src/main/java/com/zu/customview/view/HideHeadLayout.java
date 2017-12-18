@@ -189,7 +189,7 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
 
 
     private boolean parentConsumeNestedScroll = false;
-    private boolean headFirstScroll = false;
+    private boolean headFirstScroll = true;
     private boolean reactOnDragHead = true;
 
 
@@ -702,10 +702,11 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
     public void onStopNestedScroll(View target) {
         log.d("onStopNestedScroll");
         mNestedParentHelper.onStopNestedScroll(target);
+        stopNestedScroll();
 //        waitFling = false;
         if(parentConsumeNestedScroll)
         {
-            stopNestedScroll();
+
             parentConsumeNestedScroll = false;
         }
 
@@ -751,27 +752,12 @@ public class HideHeadLayout extends ViewGroup implements NestedScrollingParent, 
         {
             int scrollOffset = computeScrollOffsetY(-restY);
             offsetChildrenY(scrollOffset);
-//                scrollBy(0, -scrollOffset);
+
             consumed[1] = parentConsumed[1]  + (- scrollOffset);
         }
         consumed[0] = parentConsumed[0];
 
 
-//        {
-//            if(shouldScrollY(-dy) && headFirstScroll)
-//            {
-//                int scrollOffset = computeScrollOffsetY(-dy);
-//                offsetChildrenY(scrollOffset);
-////                scrollBy(0, -scrollOffset);
-////                log.d("scrollOffset = " + scrollOffset);
-//                consumed[1] = -scrollOffset;
-////                consumed[1] = dy;
-//            }else
-//            {
-//                consumed[1] = 0;
-//            }
-//            consumed[0] = 0;
-//        }
 
     }
 
