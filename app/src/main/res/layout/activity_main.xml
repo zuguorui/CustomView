@@ -100,6 +100,11 @@
                 android:layout_height="wrap_content"
                 android:text="DragToLoad"
                 android:id="@+id/drag_to_load_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DrawChart"
+                android:id="@+id/draw_chart_activity"/>
         </LinearLayout>
     </ScrollView>
 

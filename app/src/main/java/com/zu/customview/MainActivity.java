@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button ftpTestButton;
     private Button hideHeadTestButton;
     private Button dragToLoadButton;
+    private Button drawChartButton;
 
     private Observer observer = new Observer() {
         @Override
@@ -136,6 +137,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dragToLoadButton = (Button)findViewById(R.id.drag_to_load_activity);
         dragToLoadButton.setOnClickListener(this);
 
+        drawChartButton = (Button)findViewById(R.id.draw_chart_activity);
+        drawChartButton.setOnClickListener(this);
+
     }
 
 
@@ -210,6 +214,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.drag_to_load_activity:
                 Intent intent16 = new Intent(this, DragToLoadActivity.class);
                 startActivity(intent16);
+                break;
+            case R.id.draw_chart_activity:
+                Intent intent17 = new Intent(this, ChartActivity.class);
+                startActivity(intent17);
                 break;
             default:
                 break;
