@@ -10,6 +10,8 @@ import android.widget.ImageView;
 
 import com.zu.customview.utils.ChartUtil;
 
+import java.util.Random;
+
 public class ChartActivity extends AppCompatActivity {
 
     private ImageView imageView;
@@ -49,9 +51,13 @@ public class ChartActivity extends AppCompatActivity {
                 ChartUtil.DataParam param = ChartUtil.drawCoordinate(canvas, coordinateParam);
 
                 PointF[] data1 = new PointF[coordinateParam.HAxisValues.length];
+
+                Random random = new Random();
+                float[] nums = new float[]{18, 5, -5, -10, -15, 0};
                 for(int i = 0; i < data1.length; i++)
                 {
-                    data1[i] = new PointF(i, -10 + i * 5);
+                    int index = random.nextInt(6);
+                    data1[i] = new PointF(i, nums[index]);
                 }
 
                 param.data = data1;
@@ -69,7 +75,8 @@ public class ChartActivity extends AppCompatActivity {
                 PointF[] data2 = new PointF[coordinateParam.HAxisValues.length];
                 for(int i = 0; i < data1.length; i++)
                 {
-                    data2[i] = new PointF(i, 10 - i * 5);
+                    int index = random.nextInt(6);
+                    data2[i] = new PointF(i, nums[index]);
                 }
 
                 param.data = data2;

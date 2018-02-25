@@ -18,4 +18,8 @@
         <item name="android:windowEnterAnimation">@anim/poptip_scale_top_in</item>
         <item name="android:windowExitAnimation">@anim/poptip_scale_top_out</item>
     </style>
+    <style name="PopAlphaAnim">
+        <item name="android:windowEnterAnimation">@anim/poptip_alpha_in</item>
+        <item name="android:windowExitAnimation">@anim/poptip_alpha_out</item>
+    </style>
 </resources>

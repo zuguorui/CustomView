@@ -10,17 +10,24 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
 import android.os.IBinder;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.zu.customview.App;
+import com.zu.customview.R;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +41,7 @@ import io.reactivex.annotations.NonNull;
 public class PopTip extends PopupWindow {
 
     private Param param = new Param();
+    private PxParam pxParam = null;
     private String message = null;
 
 
@@ -52,6 +60,7 @@ public class PopTip extends PopupWindow {
     public void setParam(Param param)
     {
         this.param = param;
+        transToPxParam(param);
     }
 
     public Param getParam()
@@ -69,6 +78,7 @@ public class PopTip extends PopupWindow {
     public PopTip()
     {
         super();
+        setOutsideTouchable(true);
         dismissListenerContainer = new OnDismissListener() {
             @Override
             public void onDismiss() {
@@ -93,7 +103,7 @@ public class PopTip extends PopupWindow {
     public PopTip(Param param)
     {
         this();
-        this.param = param;
+        setParam(param);
 
     }
 
@@ -111,7 +121,7 @@ public class PopTip extends PopupWindow {
         return message;
     }
 
-    private void updataBitmap(@NonNull EDGE edge, @NonNull ALIGN align, @NonNull RectF contentPos, @NonNull RectF triPos)
+    private void updateBitmap(@NonNull EDGE edge, @NonNull ALIGN align, @NonNull RectF contentPos, @NonNull RectF triPos)
     {
         setContentView(null);
         if(resultBitmap != null && !resultBitmap.isRecycled())
@@ -134,19 +144,12 @@ public class PopTip extends PopupWindow {
         Canvas canvas = new Canvas(resultBitmap);
 
         Paint backgroundPaint = new Paint();
-        backgroundPaint.setColor(param.backgroundColor);
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setColor(pxParam.backgroundColor);
         backgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        canvas.drawRoundRect(contentPos.left, contentPos.top, contentPos.right, contentPos.bottom, param.roundX, param.roundY, backgroundPaint);
+        canvas.drawRoundRect(contentPos.left, contentPos.top, contentPos.right, contentPos.bottom, pxParam.roundX, pxParam.roundY, backgroundPaint);
 
         if(edge == EDGE.LEFT)
-        {
-            Path path = new Path();
-            path.moveTo(triPos.left, triPos.centerY());
-            path.lineTo(triPos.right, triPos.bottom);
-            path.lineTo(triPos.right, triPos.top);
-            path.close();
-            canvas.drawPath(path, backgroundPaint);
-        }else if(edge == EDGE.RIGHT)
         {
             Path path = new Path();
             path.moveTo(triPos.right, triPos.centerY());
@@ -154,7 +157,15 @@ public class PopTip extends PopupWindow {
             path.lineTo(triPos.left, triPos.top);
             path.close();
             canvas.drawPath(path, backgroundPaint);
-        }else if(edge == EDGE.TOP)
+        }else if(edge == EDGE.RIGHT)
+        {
+            Path path = new Path();
+            path.moveTo(triPos.left, triPos.centerY());
+            path.lineTo(triPos.right, triPos.bottom);
+            path.lineTo(triPos.right, triPos.top);
+            path.close();
+            canvas.drawPath(path, backgroundPaint);
+        }else if(edge == EDGE.BOTTOM)
         {
             Path path = new Path();
             path.moveTo(triPos.centerX(), triPos.top);
@@ -173,107 +184,122 @@ public class PopTip extends PopupWindow {
 
         String temp = message == null ? "" : message;
         Paint textPaint = new Paint();
-        textPaint.setTextSize(param.textSize);
-        textPaint.setColor(param.textColor);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(pxParam.textSize);
+        textPaint.setColor(pxParam.textColor);
         float textWidth = textPaint.measureText(temp);
         Paint.FontMetrics fm = textPaint.getFontMetrics();
-        float textHeight = Math.abs(fm.top - fm.bottom);
-        canvas.drawText(temp, contentPos.centerX() - textWidth / 2, contentPos.centerY() + textHeight / 2, textPaint);
+        float textHeight = fm.ascent + fm.descent;
+        canvas.drawText(temp, contentPos.centerX() - textWidth / 2, contentPos.centerY() - textHeight / 2 , textPaint);
 
 
     }
 
-    private void calculatePosition(@NonNull EDGE edge, @NonNull ALIGN align, @NonNull RectF contentPos, @NonNull RectF triPos)
+    private void calculateContentRect(@NonNull EDGE edge, @NonNull RectF contentRect)
     {
-        if(param == null)
+        if(pxParam == null)
         {
-            param = new Param();
+           setParam(new Param());
         }
+
+
+
         Paint textPaint = new Paint();
-        textPaint.setTextSize(param.textSize);
+        textPaint.setTextSize(pxParam.textSize);
         String temp = message == null ? "" : message;
         float textWidth = textPaint.measureText(temp);
         Paint.FontMetrics fm = textPaint.getFontMetrics();
-        float textHeight = Math.abs(fm.top - fm.bottom);
-        int width = (int)(textWidth + param.paddingLeft + param.paddingRight);
-        int height = (int)(textHeight + param.paddingTop + param.paddintBottom);
+        float textHeight = Math.abs(fm.top) + Math.abs(fm.bottom);
+        int width = (int)(textWidth + pxParam.paddingLeft + pxParam.paddingRight);
+        int height = (int)(textHeight + pxParam.paddingTop + pxParam.paddingBottom);
         if(edge == EDGE.TOP || edge == EDGE.BOTTOM)
         {
-            if(width < param.triWidth + param.roundX * 2)
+            if(width < pxParam.triWidth + pxParam.roundX * 2)
             {
-                width = (int)(param.triWidth + param.roundX * 2);
+                width = (int)(pxParam.triWidth + pxParam.roundX * 2);
             }
         }else
         {
-            if(height < param.triWidth + param.roundY * 2)
+            if(height < pxParam.triWidth + pxParam.roundY * 2)
             {
-                height = (int)(param.triWidth + param.roundY * 2);
+                height = (int)(pxParam.triWidth + pxParam.roundY * 2);
             }
         }
+        contentRect.left = 0;
+        contentRect.right = contentRect.left + width;
+        contentRect.top = 0;
+        contentRect.bottom = contentRect.top + height;
+    }
+
+    private void calculateTriRect(@NonNull EDGE edge, @NonNull RectF triPos)
+    {
+        float width = 0, height = 0;
+        if(edge == EDGE.RIGHT || edge == EDGE.LEFT)
+        {
+            width = pxParam.triHeight;
+            height = pxParam.triWidth;
+        }else{
+            width = pxParam.triWidth;
+            height = pxParam.triHeight;
+        }
+        triPos.top = 0;
+        triPos.bottom = triPos.top + height;
+        triPos.left = 0;
+        triPos.right = triPos.left + width;
+    }
+
+    private void calculatePosition(@NonNull EDGE edge, @NonNull ALIGN align, @NonNull RectF contentPos, @NonNull RectF triPos)
+    {
+        if(pxParam == null)
+        {
+            setParam(new Param());
+        }
+        calculateContentRect(edge, contentPos);
+        calculateTriRect(edge, triPos);
 
         if(edge == EDGE.LEFT)
         {
-            contentPos.top = 0;
-            contentPos.bottom = contentPos.top + height;
-            contentPos.left = param.triHeight;
-            contentPos.right = contentPos.left + width;
-            triPos.left = 0;
-            triPos.right = triPos.left + param.triHeight;
+            triPos.offset(contentPos.width(), 0);
+
 
         }else if(edge == EDGE.RIGHT){
-            contentPos.top = 0;
-            contentPos.bottom = contentPos.top + height;
-            contentPos.left = 0;
-            contentPos.right = contentPos.left + width;
-            triPos.left = contentPos.right;
-            triPos.right = triPos.left + param.triHeight;
+            contentPos.offset(triPos.width(), 0);
+
 
         }else if(edge == EDGE.TOP)
         {
-            contentPos.top = 0;
-            contentPos.bottom =  height;
-            contentPos.left = 0;
-            contentPos.right = contentPos.left + width;
-            triPos.top = contentPos.bottom;
-            triPos.bottom = triPos.top + param.triHeight;
+            triPos.offset(0, contentPos.height());
+
         }else{
-            contentPos.top = param.triHeight;
-            contentPos.bottom = contentPos.top + height;
-            contentPos.left = 0;
-            contentPos.right = contentPos.left + width;
-            triPos.top = 0;
-            triPos.bottom = triPos.top + param.triHeight;
+            contentPos.offset(0, triPos.height());
+
         }
+
         if(edge == EDGE.LEFT || edge == EDGE.RIGHT)
         {
             if(align == ALIGN.START)
             {
-                triPos.top = param.roundY;
-                triPos.bottom = triPos.top + param.triWidth;
+                triPos.offset(0, pxParam.roundY - triPos.top);
             }else if(align == ALIGN.CENTER)
             {
-                triPos.top = (contentPos.height() - param.triWidth) / 2;
-                triPos.bottom = triPos.top + param.triWidth;
+                triPos.offset(0, contentPos.centerY() - triPos.centerY());
             }else
             {
-                triPos.bottom = contentPos.height() - param.roundY;
-                triPos.top = triPos.bottom - param.triWidth;
+                triPos.offset(0, contentPos.bottom - pxParam.roundY - triPos.bottom);
             }
         }else{
             if(align == ALIGN.START)
             {
-                triPos.left = param.roundX;
-                triPos.right = triPos.left + param.triWidth;
+                triPos.offset(pxParam.roundX - triPos.left, 0);
             }else if(align == ALIGN.CENTER)
             {
-                triPos.left = (contentPos.width() - param.triWidth) / 2;
-                triPos.right = triPos.left + param.triWidth;
+                triPos.offset(contentPos.centerX() - triPos.centerX(), 0);
             }else
             {
-                triPos.right = contentPos.width() - param.roundX;
-                triPos.left = triPos.right - param.triWidth;
+                triPos.offset(contentPos.width() - pxParam.roundX - triPos.right,0);
             }
         }
+
 
 
     }
@@ -284,25 +310,204 @@ public class PopTip extends PopupWindow {
         RectF triPos = new RectF();
 
         calculatePosition(edge, align, contentPos, triPos);
-        updataBitmap(edge, align, contentPos, triPos);
+        updateBitmap(edge, align, contentPos, triPos);
 
-        Drawable b = new BitmapDrawable(context.getResources(), resultBitmap);
-        setBackgroundDrawable(b);
+
+
+
+        Rect rect = calculateShowPosition(context, anchorView, edge, align, contentPos, triPos);
+
+        ImageView imageView = new ImageView(context);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(rect.width(), rect.height());
+        imageView.setLayoutParams(layoutParams);
+        imageView.setImageBitmap(resultBitmap);
+        setContentView(imageView);
+        setWidth(rect.width());
+        setHeight(rect.height());
+        setAnimationStyle(R.style.PopAlphaAnim);
+        showAtLocation(anchorView, Gravity.TOP | Gravity.LEFT, rect.left, rect.top);
+
+    }
+
+    public void showAt(Context context, View anchorView, String message)
+    {
+        this.message = message;
+
+
+        Pair<EDGE, ALIGN> arg = calculateSuitablePosition(context, anchorView);
+
+        showAt(context, anchorView, message, arg.first, arg.second);
 
     }
 
     private Rect calculateShowPosition(Context context, View anchorView, EDGE edge, ALIGN align, RectF contentPos, RectF triPos)
     {
-        int screenWidth = getScreenWidth(context), screenHeight = getScreenHeight(context);
+
         int[] anchorLocation = new int[2];
         anchorView.getLocationInWindow(anchorLocation);
-        int top = 0, left = 0;
+
         Rect rect = new Rect();
         if(edge == EDGE.LEFT)
         {
             rect.right = anchorLocation[0];
+            rect.left = rect.right - (int)(contentPos.width() + triPos.width());
 
+        }else if(edge == EDGE.RIGHT)
+        {
+            rect.left = anchorLocation[0] + anchorView.getWidth();
+            rect.right = rect.left + (int)(contentPos.width() + triPos.width());
+        }else if(edge == EDGE.TOP)
+        {
+            rect.bottom = anchorLocation[1];
+            rect.top = rect.bottom - (int)(contentPos.height() + triPos.height());
+
+        }else{
+            rect.top = anchorLocation[1] + anchorView.getHeight();
+            rect.bottom = rect.top + (int)(contentPos.height() + triPos.height());
         }
+
+        if(edge == EDGE.LEFT || edge == EDGE.RIGHT)
+        {
+            if(align == ALIGN.START)
+            {
+                rect.top = anchorLocation[1];
+                rect.bottom = rect.top + (int)contentPos.height();
+            }else if(align == ALIGN.CENTER)
+            {
+                rect.top = (anchorLocation[1] + anchorView.getHeight() / 2) - (int)contentPos.height() / 2;
+                rect.bottom = rect.top + (int)contentPos.height();
+            }else{
+                rect.bottom = anchorLocation[1] - anchorView.getHeight();
+                rect.top = rect.bottom - (int)contentPos.height();
+            }
+        }else{
+            if(align == ALIGN.START)
+            {
+                rect.left = anchorLocation[0];
+                rect.right = rect.left + (int)contentPos.width();
+            }else if(align == ALIGN.CENTER)
+            {
+                rect.left = anchorLocation[0] + anchorView.getWidth() / 2 - (int)contentPos.width() / 2;
+                rect.right = rect.left + (int)contentPos.width();
+            }else{
+                rect.right = anchorLocation[0] + anchorView.getWidth();
+                rect.left = rect.right - (int)contentPos.width();
+            }
+        }
+
+        return rect;
+    }
+
+    private Pair<EDGE, ALIGN> calculateSuitablePosition(Context context, View anchorView)
+    {
+        int screenWidth = getScreenWidth(context), screenHeight = getScreenHeight(context);
+        int[] anchorLocation = new int[2];
+        anchorView.getLocationInWindow(anchorLocation);
+
+        int topSpace = anchorLocation[1];
+        int bottomSpace = screenHeight - topSpace - anchorView.getHeight();
+        int leftSpace = anchorLocation[0];
+        int rightSpace = screenWidth - leftSpace - anchorView.getWidth();
+
+        EDGE resultEDGE = null;
+        ALIGN resultALIGN = null;
+
+        RectF contentPos = new RectF();
+        EDGE edge = EDGE.TOP;
+        calculateContentRect(edge, contentPos);
+        int height = (int)(contentPos.height() + pxParam.triHeight);
+
+        int width = (int)contentPos.width();
+
+        if(width < screenWidth)
+        {
+            if(height <= topSpace)
+            {
+                resultEDGE = EDGE.TOP;
+            }else if(height <= bottomSpace){
+                resultEDGE = EDGE.BOTTOM;
+            }
+
+            if(resultEDGE != null)
+            {
+                if(anchorView.getWidth() + rightSpace >= width)
+                {
+                    resultALIGN = ALIGN.START;
+                }else if(anchorView.getWidth() >= width)
+                {
+                    resultALIGN = ALIGN.CENTER;
+                }else{
+                    resultALIGN = ALIGN.END;
+                }
+            }
+
+            if(resultEDGE != null && resultALIGN != null)
+            {
+                return new Pair<>(resultEDGE, resultALIGN);
+            }
+        }
+
+        edge = EDGE.LEFT;
+        calculateContentRect(edge, contentPos);
+        height = (int)contentPos.height();
+        width = (int)(contentPos.width() + pxParam.triHeight);
+
+        if(height < screenHeight)
+        {
+            if(width <= leftSpace)
+            {
+                resultEDGE = EDGE.LEFT;
+            }else if(width <= rightSpace)
+            {
+                resultEDGE = EDGE.RIGHT;
+            }
+            if(resultEDGE != null)
+            {
+                if(anchorView.getHeight() + bottomSpace >= height)
+                {
+                    resultALIGN = ALIGN.START;
+                }else if(anchorView.getHeight() >= height)
+                {
+                    resultALIGN = ALIGN.CENTER;
+                }else
+                {
+                    resultALIGN = ALIGN.END;
+                }
+            }
+
+            if(resultEDGE != null && resultALIGN != null)
+            {
+                return new Pair<>(resultEDGE, resultALIGN);
+            }
+        }
+
+        if(bottomSpace > topSpace)
+        {
+            return new Pair<>(EDGE.BOTTOM, ALIGN.START);
+        }else{
+            return new Pair<>(EDGE.TOP, ALIGN.START);
+        }
+
+
+
+    }
+
+    private void transToPxParam(Param param)
+    {
+        PxParam pxParam = new PxParam();
+        pxParam.triHeight = dpToPx(param.triHeight);
+        pxParam.triWidth = dpToPx(param.triWidth);
+        pxParam.backgroundColor = param.backgroundColor;
+        pxParam.textColor = param.textColor;
+        pxParam.roundX = dpToPx(param.roundX);
+        pxParam.roundY = dpToPx(param.roundY);
+        pxParam.textSize = spToPx(param.textSize);
+        pxParam.paddingLeft = dpToPx(param.paddingLeft);
+        pxParam.paddingTop = dpToPx(param.paddingTop);
+        pxParam.paddingRight = dpToPx(param.paddingRight);
+        pxParam.paddingBottom = dpToPx(param.paddingBottom);
+
+        this.pxParam = pxParam;
     }
 
     private int getScreenHeight(Context context)
@@ -315,15 +520,34 @@ public class PopTip extends PopupWindow {
         return context.getResources().getDisplayMetrics().widthPixels;
     }
 
+    private static float dpToPx(int dp)
+    {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, App.getAppContext().getResources().getDisplayMetrics());
+    }
+
+    private static float spToPx(int sp)
+    {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, App.getAppContext().getResources().getDisplayMetrics());
+    }
 
 
     public static class Param{
-        public float triHeight = 10f, triWidth = 15f;
-        public float roundX = 0f, roundY = 0;
-        public int backgroundColor = 0x00000000;
+        public int triHeight = 10, triWidth = 15;
+        public int roundX = 10, roundY = 10;
+        public int backgroundColor = 0xffff0000;
 
         public int textColor = 0xff000000;
-        public float textSize = 15f;
-        public int paddingLeft = 2, paddingRight = 2, paddingTop = 2, paddintBottom = 2;
+        public int textSize = 15;
+        public int paddingLeft = 10, paddingRight = 10, paddingTop = 5, paddingBottom = 5;
+    }
+
+    private static class PxParam{
+        public float triHeight = 10, triWidth = 15;
+        public float roundX = 10, roundY = 10;
+        public int backgroundColor = 0xffff0000;
+
+        public int textColor = 0xff000000;
+        public float textSize = 10;
+        public float paddingLeft = 20, paddingRight = 20, paddingTop = 20, paddingBottom = 20;
     }
 }
