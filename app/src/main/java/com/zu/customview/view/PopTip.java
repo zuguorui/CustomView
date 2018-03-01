@@ -546,7 +546,7 @@ public class PopTip extends PopupWindow {
         public float roundX = 10, roundY = 10;
         public int backgroundColor = 0xffff0000;
 
-        public int textColor = 0xff000000;
+        public int textColor = 0xffffffff;
         public float textSize = 10;
         public float paddingLeft = 20, paddingRight = 20, paddingTop = 20, paddingBottom = 20;
     }

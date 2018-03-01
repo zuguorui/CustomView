@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundWaveButton">
+        <attr name="waveColor" format="color">#ff0000</attr>
+        <attr name="autoAnimWave" format="boolean">true</attr>
+        <attr name="animWaveWhenClick" format="boolean">true</attr>
+        <attr name="interpolator" format="reference"></attr>
+    </declare-styleable>
+</resources>
