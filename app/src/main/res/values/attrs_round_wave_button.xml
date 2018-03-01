@@ -5,5 +5,6 @@
         <attr name="autoAnimWave" format="boolean">true</attr>
         <attr name="animWaveWhenClick" format="boolean">true</attr>
         <attr name="interpolator" format="reference"></attr>
+        <attr name="tailLength" format="integer"></attr>
     </declare-styleable>
 </resources>

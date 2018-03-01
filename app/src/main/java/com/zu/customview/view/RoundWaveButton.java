@@ -39,6 +39,8 @@ public class RoundWaveButton extends ViewGroup {
     private int timeInterval = 500;//How many milliseconds show another wave after last one
     private int speed = 20;//How much pixes wave enlarge radius every per 10 milliseconds;
 
+    private int tailLength = 10;
+
     private int totalTime = 0;
 
     private Interpolator interpolator = new DecelerateInterpolator();
@@ -74,6 +76,7 @@ public class RoundWaveButton extends ViewGroup {
         waveColor = array.getColor(R.styleable.RoundWaveButton_waveColor, waveColor);
         autoAnimWave = array.getBoolean(R.styleable.RoundWaveButton_autoAnimWave, autoAnimWave);
         animWaveWhenClick = array.getBoolean(R.styleable.RoundWaveButton_animWaveWhenClick, animWaveWhenClick);
+        tailLength = array.getInt(R.styleable.RoundWaveButton_tailLength, tailLength);
         if(array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE) != Integer.MIN_VALUE)
         {
             interpolator = AnimationUtils.loadInterpolator(context, array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE));
@@ -208,7 +211,8 @@ public class RoundWaveButton extends ViewGroup {
     {
         int color1 = waveColor & 0x00ffffff;
         int[] colors = new int[]{color1, color1, waveColor};
-        float[] positions = new float[]{0f, 0.7f, 1f};
+        float ratio = (outRadius - tailLength) * 1.0f / outRadius;
+        float[] positions = new float[]{0f, ratio, 1f};
         RadialGradient radialGradient = new RadialGradient(outRadius, outRadius, outRadius, colors, positions, Shader.TileMode.CLAMP);
         Paint paint = new Paint();
         paint.setShader(radialGradient);
@@ -229,15 +233,80 @@ public class RoundWaveButton extends ViewGroup {
         return false;
     }
 
+    private void computeWaveInfos()
+    {
+
+    }
+
+    private void addWaveInfo(boolean force)
+    {
+        long time = System.currentTimeMillis();
+        if(force || waveInfos.size() == 0)
+        {
+            WaveInfo waveInfo = new WaveInfo();
+            waveInfo.createTime = time;
+            waveInfos.add(waveInfo);
+            return;
+        }else{
+            WaveInfo last = waveInfos.getLast();
+            if(time - last.createTime < timeInterval)
+            {
+                return;
+            }else{
+                WaveInfo waveInfo = new WaveInfo();
+                waveInfo.createTime = time;
+                waveInfos.add(waveInfo);
+            }
+        }
+    }
+
+    private void removeWaveInfo()
+    {
+        if(waveInfos.size() == 0)
+        {
+            return;
+        }
+        long time = System.currentTimeMillis();
+        while(true)
+        {
+            WaveInfo first = waveInfos.getFirst();
+            if(first.radius - tailLength > outRadius)
+            {
+                waveInfos.remove(0);
+            }
+        }
+    }
+
     private class WaveInfo{
         public long createTime = 0;
         public int radius = 0;
     }
 
     private class DrawBackgroundThread extends Thread{
+        private Object waitObject = null;
+        private boolean running = false;
+
+        public DrawBackgroundThread(Object waitObject)
+        {
+            this.waitObject = waitObject;
+
+
+        }
+
+        private boolean isRunning()
+        {
+            return running;
+        }
+
         @Override
         public void run() {
-            if()
+            while(true)
+            {
+                synchronized (waitObject)
+                {
+
+                }
+            }
         }
     }
 }
