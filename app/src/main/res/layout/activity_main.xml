@@ -106,6 +106,11 @@
                 android:layout_height="wrap_content"
                 android:text="DrawChart"
                 android:id="@+id/draw_chart_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WaveButton"
+                android:id="@+id/wave_button_activity"/>
         </LinearLayout>
     </ScrollView>
 

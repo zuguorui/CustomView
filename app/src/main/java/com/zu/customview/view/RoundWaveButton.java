@@ -6,23 +6,30 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.graphics.RadialGradient;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ThemedSpinnerAdapter;
+import android.widget.LinearLayout;
 
+
+import com.zu.customview.MyLog;
 import com.zu.customview.R;
 
 import java.util.LinkedList;
@@ -31,15 +38,17 @@ import java.util.LinkedList;
  * Created by rickson on 2018/3/1.
  */
 
-public class RoundWaveButton extends ViewGroup {
+public class RoundWaveButton extends FrameLayout {
+
+    MyLog log = new MyLog("RoundWaveButton", true);
     private int waveColor = 0xff4596;
     private boolean autoAnimWave = true;
     private boolean animWaveWhenClick = true;
 
-    private int timeInterval = 500;//How many milliseconds show another wave after last one
+    private int timeInterval = 1000;//How many milliseconds show another wave after last one
     private int speed = 20;//How much pixes wave enlarge radius every per 10 milliseconds;
 
-    private int tailLength = 10;
+    private int tailLength = 250;
 
     private int totalTime = 0;
 
@@ -48,13 +57,24 @@ public class RoundWaveButton extends ViewGroup {
 
     private Bitmap wave = null;
 
-    private BitmapDrawable drawable = null;
+//    private Bitmap[] backBitmapBuffer = new Bitmap[2];
+//    private Canvas[] backCanvasBuffer = new Canvas[2];
+//    private BitmapDrawable[] backDrawableBuffer = new BitmapDrawable[2];
 
     private int centerX = 0, centerY = 0;
 
     private int outRadius = 0, inRadius = 0;
 
-    private int lastOutRadius = 0;
+    private int oldOutRadius = 0;
+    private int oldWidth = 0, oldHeight = 0;
+
+    private boolean animAlpha = true;
+
+//    private DrawBackgroundThread waveThread = null;
+
+//    private Object waitObject = new Object();
+
+
 
     private LinkedList<WaveInfo> waveInfos = new LinkedList<>();
 
@@ -76,7 +96,9 @@ public class RoundWaveButton extends ViewGroup {
         waveColor = array.getColor(R.styleable.RoundWaveButton_waveColor, waveColor);
         autoAnimWave = array.getBoolean(R.styleable.RoundWaveButton_autoAnimWave, autoAnimWave);
         animWaveWhenClick = array.getBoolean(R.styleable.RoundWaveButton_animWaveWhenClick, animWaveWhenClick);
-        tailLength = array.getInt(R.styleable.RoundWaveButton_tailLength, tailLength);
+        tailLength = (int)array.getDimension(R.styleable.RoundWaveButton_tailLength, tailLength);
+        timeInterval = array.getInt(R.styleable.RoundWaveButton_timeInterval, timeInterval);
+        animAlpha = array.getBoolean(R.styleable.RoundWaveButton_animaAlpha, animAlpha);
         if(array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE) != Integer.MIN_VALUE)
         {
             interpolator = AnimationUtils.loadInterpolator(context, array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE));
@@ -85,6 +107,7 @@ public class RoundWaveButton extends ViewGroup {
 
         setClickable(true);
 
+        setWillNotDraw(false);
 
 
     }
@@ -106,7 +129,8 @@ public class RoundWaveButton extends ViewGroup {
 
 
         View child = getChildAt(0);
-        MarginLayoutParams layoutParams = (MarginLayoutParams) child.getLayoutParams();
+        MarginLayoutParams layoutParams = (MarginLayoutParams)child.getLayoutParams();
+
 
         int horPadding = getPaddingRight() + getPaddingLeft() + layoutParams.rightMargin + layoutParams.leftMargin;
         int verPadding = getPaddingTop() + getPaddingBottom() + layoutParams.topMargin + layoutParams.bottomMargin;
@@ -154,7 +178,29 @@ public class RoundWaveButton extends ViewGroup {
 
         setMeasuredDimension(resultWidth, resultHeight);
 
+        if(resultHeight != oldHeight || resultWidth != oldWidth)
+        {
+            oldHeight = resultHeight;
+            oldWidth = resultWidth;
+//            for(int i = 0; i < backBitmapBuffer.length; i++)
+//            {
+//                if(backBitmapBuffer[i] != null)
+//                {
+//                    backBitmapBuffer[i].recycle();
+//                    backBitmapBuffer[i] = null;
+//                    backCanvasBuffer[i] = null;
+//                    backDrawableBuffer[i] = null;
+//
+//
+//                }
+//                backBitmapBuffer[i] = Bitmap.createBitmap(resultWidth, resultHeight, Bitmap.Config.ARGB_8888);
+//                backCanvasBuffer[i] = new Canvas(backBitmapBuffer[i]);
+//                backDrawableBuffer[i] = new BitmapDrawable(getContext().getResources(), backBitmapBuffer[i]);
+//
+//                setBackground(backDrawableBuffer[0]);
+//            }
 
+        }
 
 
 
@@ -174,13 +220,12 @@ public class RoundWaveButton extends ViewGroup {
             {
                 throw new IllegalStateException("This view should only have one child");
             }
+            super.onLayout(changed, l, t, r, b);
             View child = getChildAt(0);
-            MarginLayoutParams layoutParams = (MarginLayoutParams)child.getLayoutParams();
-            int left = getPaddingLeft() + layoutParams.leftMargin;
-            int top = getPaddingTop() + layoutParams.topMargin;
-            int right = left + child.getMeasuredWidth();
-            int bottom = top + child.getMeasuredHeight();
-            child.layout(left, top, right, bottom);
+            int left = child.getLeft();
+            int top = child.getTop();
+            int right = child.getRight();
+            int bottom = child.getBottom();
 
             centerX = (left + right) / 2;
             centerY = (top + bottom) / 2;
@@ -193,14 +238,14 @@ public class RoundWaveButton extends ViewGroup {
 
             outRadius = Math.max(Math.max(topSpace, bottomSpace), Math.max(leftSpace, rightSpace));
 
-            totalTime = (outRadius - inRadius) / speed * 10;
-            if(outRadius > 2 * lastOutRadius)
+            totalTime = (outRadius - inRadius) / speed * 100;
+            if(outRadius > 2 * oldOutRadius)
             {
                 if(wave != null && !wave.isRecycled())
                 {
                     wave.recycle();
                 }
-                lastOutRadius = outRadius;
+                oldOutRadius = outRadius;
                 wave = Bitmap.createBitmap(outRadius * 2, outRadius * 2, Bitmap.Config.ARGB_8888);
                 drawWaveSrc(new Canvas(wave));
             }
@@ -212,9 +257,14 @@ public class RoundWaveButton extends ViewGroup {
         int color1 = waveColor & 0x00ffffff;
         int[] colors = new int[]{color1, color1, waveColor};
         float ratio = (outRadius - tailLength) * 1.0f / outRadius;
+        if(ratio < 0)
+        {
+            ratio = 0f;
+        }
         float[] positions = new float[]{0f, ratio, 1f};
         RadialGradient radialGradient = new RadialGradient(outRadius, outRadius, outRadius, colors, positions, Shader.TileMode.CLAMP);
         Paint paint = new Paint();
+        paint.setAntiAlias(true);
         paint.setShader(radialGradient);
         canvas.drawCircle(outRadius, outRadius, outRadius, paint);
     }
@@ -225,54 +275,150 @@ public class RoundWaveButton extends ViewGroup {
         switch (ev.getActionMasked())
         {
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_UP:
             {
-
+                if(animWaveWhenClick)
+                {
+                    updateWaveInfos(true);
+                    invalidate();
+                }
             }
         }
 
         return false;
     }
 
-    private void computeWaveInfos()
-    {
-
-    }
-
-    private void addWaveInfo(boolean force)
+    private void updateWaveInfos(boolean forceAdd)
     {
         long time = System.currentTimeMillis();
-        if(force || waveInfos.size() == 0)
+        addWaveInfo(forceAdd, time);
+        removeWaveInfo(time);
+        computeWaveInfos(time);
+    }
+
+    private void drawBackground(Canvas canvas)
+    {
+        if(waveInfos.size() == 0)
+        {
+            return;
+        }
+        Paint mBitPaint = new Paint();
+        mBitPaint.setAntiAlias(true);
+
+//        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        canvas.save();
+        Path path = new Path();
+        path.addCircle(centerX, centerY, inRadius, Path.Direction.CW);
+        canvas.clipPath(path);
+        path.reset();
+        path.addCircle(centerX, centerY, outRadius, Path.Direction.CW);
+//
+        canvas.clipPath(path, Region.Op.REVERSE_DIFFERENCE);
+
+        Rect src = new Rect(0,0,wave.getWidth(), wave.getHeight());
+
+        for(WaveInfo waveInfo : waveInfos)
+        {
+            mBitPaint.setAlpha(waveInfo.alpha);
+            RectF dest = new RectF(centerX - waveInfo.radius, centerY - waveInfo.radius, centerX + waveInfo.radius, centerY + waveInfo.radius);
+            canvas.drawBitmap(wave, src, dest, mBitPaint);
+
+        }
+        canvas.restore();
+    }
+
+    private void computeWaveInfos(long time)
+    {
+        log.d("waveInfos.size = " + waveInfos.size());
+
+        for(WaveInfo waveInfo : waveInfos)
+        {
+            float process = (time - waveInfo.createTime) * 1.0f / totalTime;
+            float fraction = interpolator.getInterpolation(process);
+
+            int radius = evaluator.evaluate(fraction, inRadius, outRadius).intValue();
+            waveInfo.radius = radius;
+            if(animAlpha)
+            {
+                waveInfo.alpha = evaluator.evaluate(fraction, 255, 0).intValue();
+            }
+
+        }
+    }
+
+    private void addWaveInfo(boolean force, long time)
+    {
+
+        if(force)
         {
             WaveInfo waveInfo = new WaveInfo();
             waveInfo.createTime = time;
             waveInfos.add(waveInfo);
             return;
         }else{
-            WaveInfo last = waveInfos.getLast();
-            if(time - last.createTime < timeInterval)
+            if(autoAnimWave)
             {
-                return;
-            }else{
-                WaveInfo waveInfo = new WaveInfo();
-                waveInfo.createTime = time;
-                waveInfos.add(waveInfo);
+                if(waveInfos.size() == 0)
+                {
+                    WaveInfo waveInfo = new WaveInfo();
+                    waveInfo.createTime = time;
+                    waveInfos.add(waveInfo);
+                    return;
+                }else{
+                    WaveInfo last = waveInfos.getLast();
+                    if(time - last.createTime < timeInterval)
+                    {
+                        return;
+                    }else{
+                        WaveInfo waveInfo = new WaveInfo();
+                        waveInfo.createTime = time;
+                        waveInfos.add(waveInfo);
+                        log.d("add waveinfo");
+                    }
+                }
             }
+
         }
     }
 
-    private void removeWaveInfo()
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        updateWaveInfos(false);
+
+        super.onDraw(canvas);
+        drawBackground(canvas);
+        invalidate();
+//        if(waveThread == null)
+//        {
+//            waveThread = new DrawBackgroundThread(waitObject);
+//            waveThread.start();
+//        }
+//        if(waveThread.isWait())
+//        {
+//            synchronized (waitObject)
+//            {
+//                waitObject.notify();
+//            }
+//        }
+    }
+
+    private void removeWaveInfo(long time)
     {
         if(waveInfos.size() == 0)
         {
             return;
         }
-        long time = System.currentTimeMillis();
+
         while(true)
         {
             WaveInfo first = waveInfos.getFirst();
-            if(first.radius - tailLength > outRadius)
+            if(time - first.createTime > totalTime)
             {
                 waveInfos.remove(0);
+                log.d("remove waveinfo");
+            }else{
+                return;
             }
         }
     }
@@ -280,33 +426,71 @@ public class RoundWaveButton extends ViewGroup {
     private class WaveInfo{
         public long createTime = 0;
         public int radius = 0;
+        public int alpha = 255;
     }
 
-    private class DrawBackgroundThread extends Thread{
-        private Object waitObject = null;
-        private boolean running = false;
-
-        public DrawBackgroundThread(Object waitObject)
-        {
-            this.waitObject = waitObject;
-
-
-        }
-
-        private boolean isRunning()
-        {
-            return running;
-        }
-
-        @Override
-        public void run() {
-            while(true)
-            {
-                synchronized (waitObject)
-                {
-
-                }
-            }
-        }
-    }
+//    private class DrawBackgroundThread extends Thread{
+//        private Object waitObject = null;
+//        private boolean waiting = false;
+//
+//        private int lastIndex = 0;
+//
+//        public DrawBackgroundThread(Object waitObject)
+//        {
+//            this.waitObject = waitObject;
+////            post(new Runnable() {
+////                @Override
+////                public void run() {
+////                    setBackground(backDrawableBuffer[lastIndex]);
+////                }
+////            });
+//
+//
+//        }
+//
+//        private boolean isWait()
+//        {
+//            return waiting;
+//        }
+//
+//        @Override
+//        public void run() {
+//            while(true)
+//            {
+//                synchronized (waitObject)
+//                {
+////                    log.d("run");
+//                    waiting = false;
+//                    updateWaveInfos(false);
+//                    lastIndex = (lastIndex + 1) % backBitmapBuffer.length;
+//                    log.d("lastIndex = " + lastIndex);
+//                    drawBackground(backCanvasBuffer[lastIndex]);
+//                    waiting = true;
+////                    postInvalidateDelayed(10);
+//                    postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            setBackground(backDrawableBuffer[lastIndex]);
+//                            invalidate();
+//                        }
+//                    },0);
+//
+////                    try{
+////                        Thread.sleep(5);
+////                    }catch (Exception e)
+////                    {
+////                        e.printStackTrace();
+////                    }
+//                    try{
+//                        waitObject.wait();
+//                    }catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//
+//            }
+//        }
+//    }
 }

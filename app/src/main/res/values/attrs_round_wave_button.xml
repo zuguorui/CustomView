@@ -3,8 +3,11 @@
     <declare-styleable name="RoundWaveButton">
         <attr name="waveColor" format="color">#ff0000</attr>
         <attr name="autoAnimWave" format="boolean">true</attr>
+        <attr name="timeInterval" format="integer"></attr>
         <attr name="animWaveWhenClick" format="boolean">true</attr>
         <attr name="interpolator" format="reference"></attr>
-        <attr name="tailLength" format="integer"></attr>
+        <attr name="tailLength" format="dimension"></attr>
+        <attr name="animaAlpha" format="boolean"></attr>
+
     </declare-styleable>
 </resources>

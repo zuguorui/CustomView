@@ -78,7 +78,8 @@
         <activity android:name=".HideHeadTestActivity" />
         <activity android:name=".DragToLoadActivity" />
         <activity android:name=".BindingActivity" />
-        <activity android:name=".ChartActivity"></activity>
+        <activity android:name=".ChartActivity" />
+        <activity android:name=".WaveButtonActivity"></activity>
     </application>
 
 </manifest>
