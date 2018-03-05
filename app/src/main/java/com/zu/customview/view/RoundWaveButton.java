@@ -46,7 +46,7 @@ public class RoundWaveButton extends FrameLayout {
     private boolean animWaveWhenClick = true;
 
     private int timeInterval = 1000;//How many milliseconds show another wave after last one
-    private int speed = 20;//How much pixes wave enlarge radius every per 10 milliseconds;
+    private int speed = 20;//How much pixes wave enlarge radius every per 100 milliseconds;
 
     private int tailLength = 250;
 
@@ -99,6 +99,7 @@ public class RoundWaveButton extends FrameLayout {
         tailLength = (int)array.getDimension(R.styleable.RoundWaveButton_tailLength, tailLength);
         timeInterval = array.getInt(R.styleable.RoundWaveButton_timeInterval, timeInterval);
         animAlpha = array.getBoolean(R.styleable.RoundWaveButton_animaAlpha, animAlpha);
+        speed = array.getInt(R.styleable.RoundWaveButton_speed, speed);
         if(array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE) != Integer.MIN_VALUE)
         {
             interpolator = AnimationUtils.loadInterpolator(context, array.getResourceId(R.styleable.RoundWaveButton_interpolator, Integer.MIN_VALUE));
@@ -112,7 +113,79 @@ public class RoundWaveButton extends FrameLayout {
 
     }
 
+    public int getWaveColor() {
+        return waveColor;
+    }
 
+    public void setWaveColor(int waveColor) {
+        this.waveColor = waveColor;
+    }
+
+    public boolean isAutoAnimWave() {
+        return autoAnimWave;
+    }
+
+    public void setAutoAnimWave(boolean autoAnimWave) {
+        this.autoAnimWave = autoAnimWave;
+        invalidate();
+    }
+
+    public boolean isAnimWaveWhenClick() {
+        return animWaveWhenClick;
+    }
+
+    public void setAnimWaveWhenClick(boolean animWaveWhenClick) {
+        this.animWaveWhenClick = animWaveWhenClick;
+
+    }
+
+    public int getTimeInterval() {
+        return timeInterval;
+    }
+
+    public void setTimeInterval(int timeInterval) {
+        this.timeInterval = timeInterval;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getTailLength() {
+        return tailLength;
+    }
+
+    public void setTailLength(int tailLength) {
+        this.tailLength = tailLength;
+    }
+
+    public Interpolator getInterpolator() {
+        return interpolator;
+    }
+
+    public void setInterpolator(Interpolator interpolator) {
+        this.interpolator = interpolator;
+    }
+
+    public FloatEvaluator getEvaluator() {
+        return evaluator;
+    }
+
+    public void setEvaluator(FloatEvaluator evaluator) {
+        this.evaluator = evaluator;
+    }
+
+    public boolean isAnimAlpha() {
+        return animAlpha;
+    }
+
+    public void setAnimAlpha(boolean animAlpha) {
+        this.animAlpha = animAlpha;
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -384,34 +457,28 @@ public class RoundWaveButton extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        updateWaveInfos(false);
+
 
         super.onDraw(canvas);
-        drawBackground(canvas);
-        invalidate();
-//        if(waveThread == null)
-//        {
-//            waveThread = new DrawBackgroundThread(waitObject);
-//            waveThread.start();
-//        }
-//        if(waveThread.isWait())
-//        {
-//            synchronized (waitObject)
-//            {
-//                waitObject.notify();
-//            }
-//        }
+        if(animWaveWhenClick || autoAnimWave)
+        {
+            updateWaveInfos(false);
+            drawBackground(canvas);
+            postInvalidateDelayed(5);
+        }
+
+
     }
 
     private void removeWaveInfo(long time)
     {
-        if(waveInfos.size() == 0)
-        {
-            return;
-        }
 
         while(true)
         {
+            if(waveInfos.size() == 0)
+            {
+                return;
+            }
             WaveInfo first = waveInfos.getFirst();
             if(time - first.createTime > totalTime)
             {
@@ -429,68 +496,5 @@ public class RoundWaveButton extends FrameLayout {
         public int alpha = 255;
     }
 
-//    private class DrawBackgroundThread extends Thread{
-//        private Object waitObject = null;
-//        private boolean waiting = false;
-//
-//        private int lastIndex = 0;
-//
-//        public DrawBackgroundThread(Object waitObject)
-//        {
-//            this.waitObject = waitObject;
-////            post(new Runnable() {
-////                @Override
-////                public void run() {
-////                    setBackground(backDrawableBuffer[lastIndex]);
-////                }
-////            });
-//
-//
-//        }
-//
-//        private boolean isWait()
-//        {
-//            return waiting;
-//        }
-//
-//        @Override
-//        public void run() {
-//            while(true)
-//            {
-//                synchronized (waitObject)
-//                {
-////                    log.d("run");
-//                    waiting = false;
-//                    updateWaveInfos(false);
-//                    lastIndex = (lastIndex + 1) % backBitmapBuffer.length;
-//                    log.d("lastIndex = " + lastIndex);
-//                    drawBackground(backCanvasBuffer[lastIndex]);
-//                    waiting = true;
-////                    postInvalidateDelayed(10);
-//                    postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            setBackground(backDrawableBuffer[lastIndex]);
-//                            invalidate();
-//                        }
-//                    },0);
-//
-////                    try{
-////                        Thread.sleep(5);
-////                    }catch (Exception e)
-////                    {
-////                        e.printStackTrace();
-////                    }
-//                    try{
-//                        waitObject.wait();
-//                    }catch (Exception e)
-//                    {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//
-//            }
-//        }
-//    }
+
 }

@@ -8,6 +8,6 @@
         <attr name="interpolator" format="reference"></attr>
         <attr name="tailLength" format="dimension"></attr>
         <attr name="animaAlpha" format="boolean"></attr>
-
+        <attr name="speed" format="integer"></attr>
     </declare-styleable>
 </resources>
