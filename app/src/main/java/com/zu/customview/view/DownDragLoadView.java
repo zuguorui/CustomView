@@ -24,9 +24,12 @@ public class DownDragLoadView extends DragLoadView {
     private TextView textView;
     private ValueAnimator animator = null;
 
+
     private MyLog log = new MyLog("DownDragLoadView", true);
     public DownDragLoadView(@NonNull Context context) {
+
         this(context, null);
+
 
 
     }
