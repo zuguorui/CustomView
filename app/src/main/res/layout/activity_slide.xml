@@ -12,16 +12,19 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             android:background="#54ff56"/>
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:clipToPadding="false">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             android:background="#ff5684"/>
     </LinearLayout>
 

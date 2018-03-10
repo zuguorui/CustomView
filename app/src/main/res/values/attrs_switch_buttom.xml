@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SwitchButton">
+        <attr name="leftLabel" format="string"></attr>
+        <attr name="rightLabel" format="string"></attr>
+        <attr name="leftButtonDrawable" format="reference"></attr>
+        <attr name="rightButtonDrawable" format="reference"></attr>
+        <attr name="switchPercent" format="float"></attr>
+        <attr name="shrinkLeftDrawable" format="reference"></attr>
+        <attr name="shrinkRightDrawable" format="reference"></attr>
+        <attr name="enlargeLeftDrawable" format="reference"></attr>
+        <attr name="enlargeRightDrawable" format="reference"></attr>
+
+        <attr name="shrinkLeftTextColor" format="color"></attr>
+        <attr name="shrinkRightTextColor" format="color"></attr>
+        <attr name="enlargeLeftTextColor" format="color"></attr>
+        <attr name="enlargeRightTextColor" format="color"></attr>
+
+        <attr name="textPaddingLeft" format="dimension"></attr>
+        <attr name="textPaddingRight" format="dimension"></attr>
+        <attr name="textPaddingTop" format="dimension"></attr>
+        <attr name="textPaddingBottom" format="dimension"></attr>
+
+        <attr name="textSize" format="dimension"></attr>
+        <attr name="buttonPaddingLeft" format="dimension"></attr>
+        <attr name="buttonPaddingRight" format="dimension"></attr>
+        <attr name="buttonPaddingTop" format="dimension"></attr>
+        <attr name="buttonPaddingBottom" format="dimension"></attr>
+        <attr name="shrinkLeftColor" format="color"></attr>
+        <attr name="enlargeLeftColor" format="color"></attr>
+        <attr name="shrinkRightColor" format="color"></attr>
+        <attr name="enlargeRightColor" format="color"></attr>
+    </declare-styleable>
+</resources>
