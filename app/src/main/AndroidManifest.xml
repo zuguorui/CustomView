@@ -79,7 +79,8 @@
         <activity android:name=".DragToLoadActivity" />
         <activity android:name=".BindingActivity" />
         <activity android:name=".ChartActivity" />
-        <activity android:name=".WaveButtonActivity"></activity>
+        <activity android:name=".WaveButtonActivity" />
+        <activity android:name=".SwitchButtonActivity"></activity>
     </application>
 
 </manifest>

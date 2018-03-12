@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button dragToLoadButton;
     private Button drawChartButton;
     private Button waveButton;
+    private Button switchButtonActivity;
 
     private Observer observer = new Observer() {
         @Override
@@ -144,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         waveButton = (Button)findViewById(R.id.wave_button_activity);
         waveButton.setOnClickListener(this);
 
+        switchButtonActivity = (Button)findViewById(R.id.switch_button_activity);
+        switchButtonActivity.setOnClickListener(this);
+
     }
 
 
@@ -226,6 +230,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.wave_button_activity:
                 Intent intent18 = new Intent(this, WaveButtonActivity.class);
                 startActivity(intent18);
+                break;
+            case R.id.switch_button_activity:
+                Intent intent19 = new Intent(this, SwitchButtonActivity.class);
+                startActivity(intent19);
                 break;
             default:
                 break;

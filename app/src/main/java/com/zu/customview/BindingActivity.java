@@ -45,7 +45,7 @@ public class BindingActivity extends AppCompatActivity{
 
         BufferedReader reader = null;
         StringBuilder sb = new StringBuilder();
-        StringBuf
+
         try{
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             String temp = null;

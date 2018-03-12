@@ -4,15 +4,15 @@
         <attr name="textColor" format="color"/>
         <attr name="selectedTextColor" format="color"/>
         <attr name="backgroundColor" format="color"/>
-        <attr name="textSize" format="dimension"/>
+        <attr name="textSize"/>
         <attr name="indicatorColor" format="color"/>
         <attr name="indicatorHeight" format="dimension"/>
         <attr name="intervalBetweenTags" format="dimension"/>
-        <attr name="textPadding" format="dimension"/>
-        <attr name="textPaddingTop" format="dimension"/>
-        <attr name="textPaddingBottom" format="dimension"/>
-        <attr name="textPaddingLeft" format="dimension"/>
-        <attr name="textPaddingRight" format="dimension"/>
+        <attr name="textPadding"/>
+        <attr name="textPaddingTop"/>
+        <attr name="textPaddingBottom"/>
+        <attr name="textPaddingLeft"/>
+        <attr name="textPaddingRight"/>
         <attr name="indicatorStyle" format="enum">
             <enum name="line" value="0"/>
             <enum name="background" value="1"/>

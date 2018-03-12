@@ -7,4 +7,11 @@
     <attr name="viewUnVisiableEdge" format="dimension"/>
     <attr name="minZoomLevel" format="integer"/>
     <attr name="maxZoomLevel" format="integer"/>
+    <attr name="textSize" format="dimension"/>
+    <attr name="textPaddingTop" format="dimension"/>
+    <attr name="textPaddingBottom" format="dimension"/>
+    <attr name="textPaddingLeft" format="dimension"/>
+    <attr name="textPaddingRight" format="dimension"/>
+    <attr name="buttonPadding" format="dimension"/>
+    <attr name="textPadding" format="dimension"/>
 </resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zu.customview.SwitchButtonActivity">
+    <com.zu.customview.view.SwitchButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:leftLabel="left"
+        app:rightLabel="right"
+        app:shrinkLeftColor="#ffffffff"
+        app:enlargeLeftDrawable="@drawable/enlarge_left_back"
+        app:shrinkRightColor="#ffffffff"
+        app:enlargeRightDrawable="@drawable/enlarge_right_back"
+        app:textSize="10sp"
+
+        app:leftButtonDrawable="@mipmap/show_up_list"
+        app:rightButtonDrawable="@mipmap/show_up_list"
+        app:textPadding="10dp"
+        app:buttonPadding="10dp">
+
+    </com.zu.customview.view.SwitchButton>
+</android.support.constraint.ConstraintLayout>

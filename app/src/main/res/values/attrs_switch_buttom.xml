@@ -16,12 +16,12 @@
         <attr name="enlargeLeftTextColor" format="color"></attr>
         <attr name="enlargeRightTextColor" format="color"></attr>
 
-        <attr name="textPaddingLeft" format="dimension"></attr>
-        <attr name="textPaddingRight" format="dimension"></attr>
-        <attr name="textPaddingTop" format="dimension"></attr>
-        <attr name="textPaddingBottom" format="dimension"></attr>
+        <attr name="textPaddingLeft"></attr>
+        <attr name="textPaddingRight"></attr>
+        <attr name="textPaddingTop"></attr>
+        <attr name="textPaddingBottom"></attr>
 
-        <attr name="textSize" format="dimension"></attr>
+        <attr name="textSize"></attr>
         <attr name="buttonPaddingLeft" format="dimension"></attr>
         <attr name="buttonPaddingRight" format="dimension"></attr>
         <attr name="buttonPaddingTop" format="dimension"></attr>
@@ -30,5 +30,8 @@
         <attr name="enlargeLeftColor" format="color"></attr>
         <attr name="shrinkRightColor" format="color"></attr>
         <attr name="enlargeRightColor" format="color"></attr>
+
+        <attr name="buttonPadding"/>
+        <attr name="textPadding"/>
     </declare-styleable>
 </resources>
