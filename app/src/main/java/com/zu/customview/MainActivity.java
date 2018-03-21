@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button drawChartButton;
     private Button waveButton;
     private Button switchButtonActivity;
+    private Button switchLayoutActivity;
 
     private Observer observer = new Observer() {
         @Override
@@ -148,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switchButtonActivity = (Button)findViewById(R.id.switch_button_activity);
         switchButtonActivity.setOnClickListener(this);
 
+        switchLayoutActivity = (Button)findViewById(R.id.switch_layout_activity);
+        switchLayoutActivity.setOnClickListener(this);
+
     }
 
 
@@ -234,6 +238,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.switch_button_activity:
                 Intent intent19 = new Intent(this, SwitchButtonActivity.class);
                 startActivity(intent19);
+                break;
+            case R.id.switch_layout_activity:
+                Intent intent20 = new Intent(this, SwitchLayoutActivity.class);
+                startActivity(intent20);
                 break;
             default:
                 break;

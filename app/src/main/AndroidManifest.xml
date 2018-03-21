@@ -80,7 +80,10 @@
         <activity android:name=".BindingActivity" />
         <activity android:name=".ChartActivity" />
         <activity android:name=".WaveButtonActivity" />
-        <activity android:name=".SwitchButtonActivity"></activity>
+        <activity android:name=".SwitchButtonActivity" />
+        <activity android:name=".wxapi.WXEntryActivity" />
+        <activity android:name=".SwitchLayoutActivity" />
+        <activity android:name=".TryActivity"></activity>
     </application>
 
 </manifest>

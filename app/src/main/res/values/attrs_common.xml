@@ -14,4 +14,7 @@
     <attr name="textPaddingRight" format="dimension"/>
     <attr name="buttonPadding" format="dimension"/>
     <attr name="textPadding" format="dimension"/>
+    <attr name="drawableSrc" format="reference"/>
+    <attr name="backgroundColor" format="color"/>
+    <attr name="switchPercent" format="float"></attr>
 </resources>

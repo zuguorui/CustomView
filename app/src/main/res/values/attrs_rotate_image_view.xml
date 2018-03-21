@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+    <declare-styleable name="RotateImageView">
+        <attr name="drawableSrc"/>
+        <attr name="backgroundColor"/>
+        <attr name="backgroundStrokeWidth" format="dimension"/>
+        <attr name="rotateSpeed" format="integer"/>
+    </declare-styleable>
+</resources>

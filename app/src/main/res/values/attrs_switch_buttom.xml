@@ -5,7 +5,7 @@
         <attr name="rightLabel" format="string"></attr>
         <attr name="leftButtonDrawable" format="reference"></attr>
         <attr name="rightButtonDrawable" format="reference"></attr>
-        <attr name="switchPercent" format="float"></attr>
+        <attr name="switchPercent"></attr>
         <attr name="shrinkLeftDrawable" format="reference"></attr>
         <attr name="shrinkRightDrawable" format="reference"></attr>
         <attr name="enlargeLeftDrawable" format="reference"></attr>

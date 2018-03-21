@@ -5,7 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zu.customview.SwitchButtonActivity">
+    <com.zu.customview.view.RotateImageView
+        android:id="@+id/switch_button_activity_rotateView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:drawableSrc="@drawable/chuyin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        app:layout_constraintBottom_toTopOf="@id/switch_button_activity_stopRotate"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/switch_button_activity_switchButton"
+        android:text="开始旋转"
+        android:id="@+id/switch_button_activity_startRotate"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_button_activity_stopRotate"
+        android:text="停止旋转"
+        app:layout_constraintLeft_toRightOf="@id/switch_button_activity_startRotate"
+        app:layout_constraintBottom_toTopOf="@id/switch_button_activity_switchButton"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_button_activity_resetRotate"
+        android:text="恢复位置"
+        app:layout_constraintBottom_toTopOf="@id/switch_button_activity_switchButton"
+        app:layout_constraintLeft_toRightOf="@id/switch_button_activity_stopRotate"
+        />
     <com.zu.customview.view.SwitchButton
+        android:id="@+id/switch_button_activity_switchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

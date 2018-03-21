@@ -304,6 +304,24 @@ public class SwitchButton extends FrameLayout {
 
     }
 
+    public String getLeftLabel() {
+        return leftLabel;
+    }
+
+    public void setLeftLabel(String leftLabel) {
+        this.leftLabel = leftLabel;
+        leftTextView.setText(leftLabel);
+    }
+
+    public String getRightLabel() {
+        return rightLabel;
+    }
+
+    public void setRightLabel(String rightLabel) {
+        this.rightLabel = rightLabel;
+        rightTextView.setText(rightLabel);
+    }
+
     private void computeProgress()
     {
         if(switchDirection == SWITCH_DIRECTION.LEFT && currentPercent <= switchPercent)
@@ -443,7 +461,8 @@ public class SwitchButton extends FrameLayout {
 
     private void removeSwitchButtonListener()
     {
-        mListener = null;
+        mListener = new SwitchButtonListenerImpl();
+
     }
 
     private class OnLeftImageViewClickListener implements OnClickListener{
