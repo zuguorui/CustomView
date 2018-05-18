@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button waveButton;
     private Button switchButtonActivity;
     private Button switchLayoutActivity;
+    private Button tryIncusActivity;
 
     private Observer observer = new Observer() {
         @Override
@@ -152,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switchLayoutActivity = (Button)findViewById(R.id.switch_layout_activity);
         switchLayoutActivity.setOnClickListener(this);
 
+        tryIncusActivity = (Button)findViewById(R.id.try_activity);
+        tryIncusActivity.setOnClickListener(this);
+
     }
 
 
@@ -242,6 +246,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.switch_layout_activity:
                 Intent intent20 = new Intent(this, SwitchLayoutActivity.class);
                 startActivity(intent20);
+                break;
+            case R.id.try_activity:
+                Intent intent21 = new Intent(this, TryActivity.class);
+                startActivity(intent21);
                 break;
             default:
                 break;

@@ -121,6 +121,11 @@
                 android:layout_height="wrap_content"
                 android:text="SwitchLayout"
                 android:id="@+id/switch_layout_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try Incus"
+                android:id="@+id/try_activity"/>
         </LinearLayout>
     </ScrollView>
 

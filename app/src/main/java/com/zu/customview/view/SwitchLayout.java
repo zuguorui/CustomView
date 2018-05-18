@@ -77,9 +77,9 @@ public class SwitchLayout extends FrameLayout {
 
         if(switchPercent > 0.5f)
         {
-            switchPercent = 1 - switchPercent;
+            switchPercent = 1f - switchPercent;
         }
-        currentPercent = switchPercent;
+        currentPercent = 1f - switchPercent;
 
         mListener = new SwitchLayoutListenerImpl();
 
@@ -298,17 +298,33 @@ public class SwitchLayout extends FrameLayout {
         {
             currentPercent = 1 - switchPercent;
         }
+
+        if(currentPercent > switchPercent && currentPercent < (1f - switchSpeed))
+        {
+            float percent = (currentPercent - switchPercent) / (1 - 2 * switchPercent);
+            mListener.switching(switchDirection, percent);
+        }
         lastDrawTime = time;
 
 
     }
 
-    private void setSwitchLayoutListener(SwitchLayoutListener listener)
+    public float getSwitchPercent()
+    {
+        return switchPercent;
+    }
+
+    public float getCurrentPercent()
+    {
+        return currentPercent;
+    }
+
+    public void setSwitchLayoutListener(SwitchLayoutListener listener)
     {
         mListener = listener;
     }
 
-    private void removeSwitchLayoutListener()
+    public void removeSwitchLayoutListener()
     {
         mListener = new SwitchLayoutListenerImpl();
 
