@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button switchButtonActivity;
     private Button switchLayoutActivity;
     private Button tryIncusActivity;
+    private Button webViewActivity;
 
     private Observer observer = new Observer() {
         @Override
@@ -156,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tryIncusActivity = (Button)findViewById(R.id.try_activity);
         tryIncusActivity.setOnClickListener(this);
 
+        webViewActivity = (Button)findViewById(R.id.webview_activity);
+        webViewActivity.setOnClickListener(this);
     }
 
 
@@ -250,6 +253,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.try_activity:
                 Intent intent21 = new Intent(this, TryActivity.class);
                 startActivity(intent21);
+                break;
+            case R.id.webview_activity:
+                Intent intent22 = new Intent(this, WebViewActivity.class);
+                startActivity(intent22);
                 break;
             default:
                 break;

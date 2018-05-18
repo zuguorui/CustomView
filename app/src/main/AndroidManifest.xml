@@ -83,7 +83,8 @@
         <activity android:name=".SwitchButtonActivity" />
         <activity android:name=".wxapi.WXEntryActivity" />
         <activity android:name=".SwitchLayoutActivity" />
-        <activity android:name=".TryActivity"></activity>
+        <activity android:name=".TryActivity" />
+        <activity android:name=".WebViewActivity"></activity>
     </application>
 
 </manifest>
