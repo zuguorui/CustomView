@@ -13,6 +13,8 @@ import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import com.zu.customview.swiftp.FtpActivity;
 import com.zu.customview.view.ZoomActivity;
 
+import java.io.BufferedWriter;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button switchLayoutActivity;
     private Button tryIncusActivity;
     private Button webViewActivity;
+    private Button tabBtnActivity;
+    private Button changeSizeIndicatorActivity;
 
     private Observer observer = new Observer() {
         @Override
@@ -159,6 +163,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         webViewActivity = (Button)findViewById(R.id.webview_activity);
         webViewActivity.setOnClickListener(this);
+
+        tabBtnActivity = findViewById(R.id.TabBtn_activity);
+        tabBtnActivity.setOnClickListener(this);
+
+        changeSizeIndicatorActivity = findViewById(R.id.ChangeSizeIndicator_activity);
+        changeSizeIndicatorActivity.setOnClickListener(this);
+
+
     }
 
 
@@ -257,6 +269,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.webview_activity:
                 Intent intent22 = new Intent(this, WebViewActivity.class);
                 startActivity(intent22);
+                break;
+            case R.id.TabBtn_activity:
+                Intent intent23 = new Intent(this, TabBtnActivity.class);
+                startActivity(intent23);
+                break;
+            case R.id.ChangeSizeIndicator_activity:
+                Intent intent24 = new Intent(this, ChangeSizeIndicatorActivity.class);
+                startActivity(intent24);
                 break;
             default:
                 break;

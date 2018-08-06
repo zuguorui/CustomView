@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="homeAsUpIndicator">@drawable/ic_left_arrow_back_black</item>
+        <item name="android:statusBarColor">#aa555555</item>
+        <item name="windowActionBarOverlay">false</item>
     </style>
     <style name="AppThemeDark" parent="Theme.AppCompat" />
     <style name="AppThemeLight" parent="Theme.AppCompat.Light" />
@@ -21,5 +24,8 @@
     <style name="PopAlphaAnim">
         <item name="android:windowEnterAnimation">@anim/poptip_alpha_in</item>
         <item name="android:windowExitAnimation">@anim/poptip_alpha_out</item>
+    </style>
+    <style name="DataSelectorStyle">
+
     </style>
 </resources>

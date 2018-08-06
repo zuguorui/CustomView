@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabBtnIndicator">
+        <attr name="textSize"/>
+        <attr name="selectedTextColor"/>
+        <attr name="unselectedTextColor" format="color"/>
+        <attr name="iconSize" format="dimension"/>
+        <attr name="contentMarginInterval" format="dimension"/>
+        <attr name="contentMarginTop" format="dimension"/>
+        <attr name="contentMarginBottom" format="dimension"/>
+        <attr name="indicatorMaxWidth" format="dimension"/>
+        <attr name="indicatorDrawable"/>
+    </declare-styleable>
+</resources>

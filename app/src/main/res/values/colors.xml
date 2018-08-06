@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="image_button_alpha">#00000000</color>
     <color name="image_button_pressed">#550099aa</color>
+
 </resources>

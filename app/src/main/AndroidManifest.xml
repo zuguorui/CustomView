@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:name=".App"
@@ -81,10 +82,22 @@
         <activity android:name=".ChartActivity" />
         <activity android:name=".WaveButtonActivity" />
         <activity android:name=".SwitchButtonActivity" />
-        <activity android:name=".wxapi.WXEntryActivity" />
         <activity android:name=".SwitchLayoutActivity" />
         <activity android:name=".TryActivity" />
-        <activity android:name=".WebViewActivity"></activity>
+        <activity android:name=".WebViewActivity" />
+
+        <receiver
+            android:name=".receiver.VolumeLimitReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".StyleTestActivity" />
+        <activity android:name=".TabBtnActivity" />
+        <activity android:name=".ChangeSizeIndicatorActivity"></activity>
     </application>
 
 </manifest>

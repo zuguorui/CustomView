@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ChangeSizeTabIndicator">
+        <attr name="textSize"/>
+        <attr name="selectTextSize" format="dimension"/>
+        <attr name="textColor"/>
+        <attr name="selectTextColor"/>
+        <attr name="textMarginInterval" format="dimension"/>
+        <attr name="indicatorHeight"/>
+        <attr name="indicatorColor"/>
+        <attr name="indicatorMarginText" format="dimension"/>
+        <attr name="layoutMode" format="enum">
+            <enum name="balance" value="0"/>
+            <enum name="stream" value="1"/>
+            <enum name="center" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

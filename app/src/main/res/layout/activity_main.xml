@@ -131,6 +131,16 @@
                 android:layout_height="wrap_content"
                 android:text="WebView"
                 android:id="@+id/webview_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TabBtn"
+                android:id="@+id/TabBtn_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ChangeSizeIndicator"
+                android:id="@+id/ChangeSizeIndicator_activity"/>
         </LinearLayout>
     </ScrollView>
 
