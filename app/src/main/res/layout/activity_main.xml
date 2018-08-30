@@ -141,6 +141,22 @@
                 android:layout_height="wrap_content"
                 android:text="ChangeSizeIndicator"
                 android:id="@+id/ChangeSizeIndicator_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ChangeSizeIndicator"
+                android:id="@+id/CircleSeekBar_activity"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FoldableLayout"
+                android:id="@+id/FoldableLayout_activity"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SurfaceView"
+                android:id="@+id/surfaceView_activity"/>
         </LinearLayout>
     </ScrollView>
 

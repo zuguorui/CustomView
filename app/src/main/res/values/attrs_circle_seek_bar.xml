@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleLineSeekBar">
+        <attr name="radius" format="dimension"/>
+        <attr name="lineWidth" format="dimension"/>
+        <attr name="angle" format="integer"/>
+        <attr name="orientationAngle" format="integer"/>
+        <attr name="thumbDrawable" format="reference"/>
+        <attr name="baseColor" format="color|reference"/>
+        <attr name="progressColor" format="color|reference"/>
+        <attr name="progress" format="float"/>
+        <attr name="thumbSize" format="dimension"/>
+        <attr name="touchSlop" format="dimension"/>
+    </declare-styleable>
+</resources>

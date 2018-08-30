@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zu.customview.CircleSeekBarActivity">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="s1d5a56w45154d22452152154512154"
+        app:layout_constraintLeft_toLeftOf="@id/circleSeekBar"
+        app:layout_constraintRight_toRightOf="@id/circleSeekBar"
+        app:layout_constraintTop_toTopOf="@id/circleSeekBar"
+        app:layout_constraintBottom_toBottomOf="@id/circleSeekBar"
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="@drawable/round_btn"/>
+    <com.zu.customview.view.CircleLineSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/circleSeekBar"
+        app:orientationAngle="90"
+        app:thumbDrawable="@drawable/round_btn"
+        app:angle="180"
+        app:progress="0.5"
+        app:progressColor="#ff0000"
+        app:lineWidth="5dp"
+        app:thumbSize="10dp"
+        android:padding="20dp"
+        android:elevation="1dp"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button webViewActivity;
     private Button tabBtnActivity;
     private Button changeSizeIndicatorActivity;
-
+    private Button circleSeekBarActivity;
+    private Button foldableActivity;
+    private Button surfaceViewActivity;
     private Observer observer = new Observer() {
         @Override
         public void onSubscribe(@NonNull Disposable d) {
@@ -170,6 +172,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         changeSizeIndicatorActivity = findViewById(R.id.ChangeSizeIndicator_activity);
         changeSizeIndicatorActivity.setOnClickListener(this);
 
+        circleSeekBarActivity = findViewById(R.id.CircleSeekBar_activity);
+        circleSeekBarActivity.setOnClickListener(this);
+
+        foldableActivity = findViewById(R.id.FoldableLayout_activity);
+        foldableActivity.setOnClickListener(this);
+
+        surfaceViewActivity = findViewById(R.id.surfaceView_activity);
+        surfaceViewActivity.setOnClickListener(this);
 
     }
 
@@ -277,6 +287,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ChangeSizeIndicator_activity:
                 Intent intent24 = new Intent(this, ChangeSizeIndicatorActivity.class);
                 startActivity(intent24);
+                break;
+            case R.id.CircleSeekBar_activity:
+                Intent intent25 = new Intent(this, CircleSeekBarActivity.class);
+                startActivity(intent25);
+                break;
+            case R.id.FoldableLayout_activity:
+                Intent intent26 = new Intent(this, FoldableLinearLayoutActivity.class);
+                startActivity(intent26);
+                break;
+            case R.id.surfaceView_activity:
+                Intent intent27 = new Intent(this, SurfaceViewActivity.class);
+                startActivity(intent27);
                 break;
             default:
                 break;

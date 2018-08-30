@@ -97,7 +97,10 @@
 
         <activity android:name=".StyleTestActivity" />
         <activity android:name=".TabBtnActivity" />
-        <activity android:name=".ChangeSizeIndicatorActivity"></activity>
+        <activity android:name=".ChangeSizeIndicatorActivity" />
+        <activity android:name=".CircleSeekBarActivity" />
+        <activity android:name=".FoldableLinearLayoutActivity" />
+        <activity android:name=".SurfaceViewActivity"></activity>
     </application>
 
 </manifest>
