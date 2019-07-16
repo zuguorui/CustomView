@@ -15,10 +15,9 @@
             android:orientation="vertical"
             android:gravity="center_horizontal">
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
                 android:text="侧滑菜单"
-
                 android:id="@+id/go_to_slide_activity"/>
             <Button
                 android:layout_width="wrap_content"

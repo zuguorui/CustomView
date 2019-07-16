@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FreqSurfaceView">
+        <attr name="baseSpeed" format="integer"/>
+        <attr name="speedStep" format="integer"/>
+        <attr name="mainLineWidth" format="dimension"/>
+        <attr name="shadowLineWidth" format="dimension"/>
+        <attr name="mainLineColor" format="color"/>
+        <attr name="shadowLineColor" format="color"/>
+        <attr name="shadowToMainScale" format="dimension"/>
+        <attr name="period" format="integer"/>
+    </declare-styleable>
+</resources>

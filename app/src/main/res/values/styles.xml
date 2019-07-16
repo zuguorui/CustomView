@@ -7,7 +7,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="homeAsUpIndicator">@drawable/ic_left_arrow_back_black</item>
-        <item name="android:statusBarColor">#aa555555</item>
         <item name="windowActionBarOverlay">false</item>
     </style>
     <style name="AppThemeDark" parent="Theme.AppCompat" />

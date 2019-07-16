@@ -16,11 +16,12 @@
         app:layout_constraintRight_toRightOf="parent"
         android:src="#586215"/>
 
-    <com.zu.customview.view.MySurfaceView
-        android:layout_width="0dp"
+    <com.zu.customview.view.FreqSurfaceView
+        android:layout_width="200dp"
         android:layout_height="150dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/surfaceView"
         />
     <TextView
         android:layout_width="wrap_content"
