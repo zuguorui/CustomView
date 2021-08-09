@@ -3,10 +3,12 @@ package com.zu.customview;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IntegerRes;
-import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.widget.Button;
 
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;

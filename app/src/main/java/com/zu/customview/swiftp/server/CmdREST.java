@@ -18,7 +18,7 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package com.zu.customview.swiftp.server;
 
 
-import net.vrallev.android.cat.Cat;
+import com.zu.customview.swiftp.Cat;
 
 public class CmdREST extends FtpCmd implements Runnable {
     protected String input;

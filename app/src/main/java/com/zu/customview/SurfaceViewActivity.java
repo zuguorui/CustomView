@@ -1,7 +1,7 @@
 package com.zu.customview;
 
 import android.graphics.PixelFormat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.zu.customview.view.FreqSurfaceView;

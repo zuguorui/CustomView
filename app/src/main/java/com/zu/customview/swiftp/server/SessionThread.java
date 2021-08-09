@@ -20,9 +20,9 @@ along with SwiFTP.  If not, see <http://www.gnu.org/licenses/>.
 package com.zu.customview.swiftp.server;
 
 import com.zu.customview.App;
+import com.zu.customview.swiftp.Cat;
 import com.zu.customview.swiftp.FsSettings;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

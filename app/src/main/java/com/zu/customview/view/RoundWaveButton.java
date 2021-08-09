@@ -16,7 +16,6 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;

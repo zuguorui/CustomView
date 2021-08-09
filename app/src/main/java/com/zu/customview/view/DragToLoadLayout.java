@@ -8,10 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.StyleRes;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -19,6 +16,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 import android.widget.Scroller;
+
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
 
 import com.zu.customview.MyLog;
 

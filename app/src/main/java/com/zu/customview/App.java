@@ -5,7 +5,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
-import net.vrallev.android.cat.Cat;
+
+import com.zu.customview.swiftp.Cat;
 
 import java.util.List;
 

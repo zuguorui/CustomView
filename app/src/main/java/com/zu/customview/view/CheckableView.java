@@ -10,7 +10,6 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
-import android.support.v7.widget.DrawableUtils;
 import android.util.AttributeSet;
 import android.widget.CheckBox;
 import android.widget.ListView;

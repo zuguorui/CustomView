@@ -1,7 +1,6 @@
 package com.zu.customview;
 
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.util.Log;
@@ -13,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.zu.customview.view.PopTip;
 

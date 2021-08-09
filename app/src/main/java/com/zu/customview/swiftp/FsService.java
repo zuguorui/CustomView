@@ -38,7 +38,6 @@ import com.zu.customview.App;
 import com.zu.customview.swiftp.server.SessionThread;
 import com.zu.customview.swiftp.server.TcpListener;
 
-import net.vrallev.android.cat.Cat;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

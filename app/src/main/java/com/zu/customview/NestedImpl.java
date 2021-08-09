@@ -1,16 +1,18 @@
 package com.zu.customview;
 
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
-import android.support.v4.view.NestedScrollingParentHelper;
+
 import android.view.View;
+
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
 
 /**
  * Created by zu on 2017/11/5.
  */
 
-public class NestedImpl implements NestedScrollingChild, NestedScrollingParent{
+public class NestedImpl implements NestedScrollingChild, NestedScrollingParent {
     private NestedScrollingChildHelper mNestedChildHelper;
     private NestedScrollingParentHelper mNestedParentHelper;
 

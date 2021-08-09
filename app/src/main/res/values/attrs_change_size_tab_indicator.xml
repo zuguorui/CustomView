@@ -4,7 +4,7 @@
         <attr name="textSize"/>
         <attr name="selectTextSize" format="dimension"/>
         <attr name="textColor"/>
-        <attr name="selectTextColor"/>
+        <attr name="selectTextColor" format="color"/>
         <attr name="textMarginInterval" format="dimension"/>
         <attr name="indicatorHeight"/>
         <attr name="indicatorColor"/>

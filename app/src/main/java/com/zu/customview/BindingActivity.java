@@ -1,10 +1,11 @@
 package com.zu.customview;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.Observable;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.zu.customview.databinding.ActivityBindingBinding;
 
@@ -17,7 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 
-public class BindingActivity extends AppCompatActivity{
+public class BindingActivity extends AppCompatActivity {
 
     ActivityBindingBinding binding = null;
 

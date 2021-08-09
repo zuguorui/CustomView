@@ -28,12 +28,14 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import net.vrallev.android.cat.Cat;
+
 
 /**
  * Detect if we get on a wifi network and possible start server.
  */
 public class WifiStateChangeReceiver extends BroadcastReceiver {
+
+
     @Override
     public void onReceive(Context context, Intent intent) {
         NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);

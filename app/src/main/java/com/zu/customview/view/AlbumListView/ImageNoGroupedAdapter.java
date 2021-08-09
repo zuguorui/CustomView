@@ -2,13 +2,14 @@ package com.zu.customview.view.AlbumListView;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.zu.customview.MyLog;
@@ -90,7 +91,7 @@ public class ImageNoGroupedAdapter extends ImageAdapter{
         ImageHolder imageHolder = (ImageHolder)holder;
         imageHolder.textView.setText(position + "");
         ImageModule imageModule = data.get(position);
-        Glide.clear(imageHolder.imageView);
+        Glide.with(imageHolder.itemView).clear(imageHolder.imageView);
         Glide.with(context)
                 .load(new File(imageModule.path))
                 .override(200, 200)

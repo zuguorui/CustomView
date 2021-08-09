@@ -9,10 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -21,6 +19,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
@@ -474,7 +475,6 @@ public class ImageLoadActivity extends AppCompatActivity {
                 final ImageView recycleView = (ImageView) convertView;
                 Glide.with(ImageLoadActivity.this)
                         .load(new File(path))
-                        .asBitmap()
                         .override(200, 200)
                         .into(recycleView);
 

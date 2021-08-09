@@ -2,10 +2,11 @@ package com.zu.customview;
 
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.zu.customview.view.DragLoadView;
 

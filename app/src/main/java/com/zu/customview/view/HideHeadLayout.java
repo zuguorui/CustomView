@@ -8,12 +8,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
 import android.support.annotation.Px;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.NestedScrollingParent;
-import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -22,6 +16,12 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
+
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingParent;
+import androidx.core.view.NestedScrollingParentHelper;
+import androidx.core.view.ViewCompat;
 
 import com.zu.customview.MyLog;
 

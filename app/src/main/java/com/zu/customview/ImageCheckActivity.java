@@ -2,8 +2,10 @@ package com.zu.customview;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.zu.customview.view.ImageCheckView;
 

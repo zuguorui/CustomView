@@ -11,8 +11,6 @@ import android.content.res.TypedArray;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -36,6 +34,8 @@ import io.reactivex.internal.operators.maybe.MaybeZipArray;
 
 import static com.zu.customview.view.AlbumListView.ImageAdapter.VIEW_TYPE_UNZOOM;
 import static com.zu.customview.view.AlbumListView.ImageAdapter.VIEW_TYPE_ZOOM;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ZoomLayoutManager extends RecyclerView.LayoutManager {
     private MyLog log = new MyLog("ZoomLayoutManager", true);

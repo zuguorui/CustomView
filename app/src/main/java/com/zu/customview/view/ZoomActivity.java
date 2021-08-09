@@ -1,7 +1,7 @@
 package com.zu.customview.view;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.zu.customview.R;
 

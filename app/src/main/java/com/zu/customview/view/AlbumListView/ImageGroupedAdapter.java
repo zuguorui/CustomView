@@ -1,17 +1,22 @@
 package com.zu.customview.view.AlbumListView;
 
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -32,9 +37,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 /**
  * Created by zu on 17-7-6.
@@ -174,11 +176,10 @@ public class ImageGroupedAdapter extends ImageAdapter {
                 }
             });
 
-            Glide.clear(imageHolder.imageView);
+            Glide.with(imageHolder.imageView).clear(imageHolder.imageView);
             Glide.with(context)
                     .load(imageModule.path)
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .override(200, 200)
 //                    .thumbnail(0.1f)
                     .into(imageHolder.imageView);
